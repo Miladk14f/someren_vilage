@@ -1,9 +1,9 @@
 namespace someren_vilage.Models
 {
-    public class ActivityParticipant
+    public class LecturerActivity
     {
-        public int StudentNumber { get; set; }
-        public Student Student { get; set; }
+        public int LecturerId { get; set; }
+        public Lecturer Lecturer { get; set; }
 
         public int ActivityId { get; set; }
         public Activity Activity { get; set; }

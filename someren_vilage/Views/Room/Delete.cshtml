@@ -1,0 +1,28 @@
+@model someren_vilage.Models.Room
+
+@{
+    ViewData["Title"] = "Delete Room";
+}
+
+<h2>Delete Room</h2>
+
+<div class="mb-3">
+    <dl class="row">
+        <dt class="col-sm-2">RoomId</dt>
+        <dd class="col-sm-10">@Model.RoomId</dd>
+        <dt class="col-sm-2">Floor</dt>
+        <dd class="col-sm-10">@Model.Floor</dd>
+        <dt class="col-sm-2">Room Type</dt>
+        <dd class="col-sm-10">@Model.RoomType</dd>
+        <dt class="col-sm-2">Capacity</dt>
+        <dd class="col-sm-10">@Model.Capacity</dd>
+        <dt class="col-sm-2">Building</dt>
+        <dd class="col-sm-10">@Model.BuildingName</dd>
+    </dl>
+</div>
+
+<form asp-controller="Room" asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" asp-for="RoomId" />
+    <button class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary ms-2">Back</a>
+</form>

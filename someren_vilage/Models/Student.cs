@@ -5,7 +5,7 @@ namespace someren_vilage.Models
 {
     public class Student
     {
-        public int Id { get; set; }
+        public int StudentNumber { get; set; }
 
         [Required]
         public string FirstName { get; set; }
@@ -13,13 +13,14 @@ namespace someren_vilage.Models
         [Required]
         public string LastName { get; set; }
 
-        public DateTime DateOfBirth { get; set; }
+        public string PhoneNumber { get; set; }
 
-        // FK
+        [Required]
+        public string Class { get; set; }
+
         public int RoomId { get; set; }
         public Room Room { get; set; }
 
-        // Navigation
         public ICollection<ActivityParticipant> Activities { get; set; }
         public ICollection<Order> Orders { get; set; }
     }

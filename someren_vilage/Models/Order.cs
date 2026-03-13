@@ -4,15 +4,14 @@ namespace someren_vilage.Models
 {
     public class Order
     {
-        public int Id { get; set; }
+        public int OrderId { get; set; }
 
-        public DateTime OrderDate { get; set; }
+        public int Quantity { get; set; }
 
-        // FK
-        public int StudentId { get; set; }
+        public int StudentNumber { get; set; }
         public Student Student { get; set; }
 
-        // Navigation
-        public ICollection<OrderItem> OrderItems { get; set; }
+        public int DrinkId { get; set; }
+        public Drink Drink { get; set; }
     }
 }
