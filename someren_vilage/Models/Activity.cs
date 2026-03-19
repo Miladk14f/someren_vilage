@@ -13,6 +13,5 @@ namespace someren_vilage.Models
         public string Day { get; set; }
 
         public TimeSpan TimeOfDay { get; set; }
-
     }
 }
