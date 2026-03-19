@@ -2,6 +2,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<someren_vilage.Repositorie.IRoomRepository, someren_vilage.Repositorie.DbRoomRepository>();
+builder.Services.AddScoped<someren_vilage.Repositorie.IStudentRepository, someren_vilage.Repositorie.DbStudentRepository>();
 
 var app = builder.Build();
 
