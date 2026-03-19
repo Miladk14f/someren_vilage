@@ -19,5 +19,6 @@ namespace someren_vilage.Models
 
         public int RoomId { get; set; }
         public Room Room { get; set; }
+
     }
 }
