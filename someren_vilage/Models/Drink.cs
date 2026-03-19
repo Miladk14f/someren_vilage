@@ -16,7 +16,5 @@ namespace someren_vilage.Models
         public int Stock { get; set; }
 
         public bool Alcoholic { get; set; }
-
-        public ICollection<Order> Orders { get; set; }
     }
 }

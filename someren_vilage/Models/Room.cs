@@ -20,7 +20,5 @@ namespace someren_vilage.Models
         [Display(Name = "Building")]
         [StringLength(10)]
         public string BuildingName { get; set; }
-    public ICollection<Student> Students { get; set; } = new List<Student>();
-    public Lecturer? Lecturer { get; set; }
     }
 }
