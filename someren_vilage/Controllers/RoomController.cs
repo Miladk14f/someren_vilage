@@ -8,10 +8,10 @@ namespace someren_vilage.Controllers
 {
     public class RoomController : Controller
     {
-        private readonly someren_vilage.Repositorie.IRoomRepository _repo;
+        private readonly IRoomRepository _repo;
         private readonly ILogger<RoomController> _logger;
 
-        public RoomController(someren_vilage.Repositorie.IRoomRepository repo, ILogger<RoomController> logger)
+        public RoomController(IRoomRepository repo, ILogger<RoomController> logger)
         {
             _repo = repo;
             _logger = logger;

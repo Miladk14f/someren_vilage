@@ -25,6 +25,26 @@ body {
   color: var(--bs-secondary-color);
   text-align: end;
 }
+/* Custom purple button */
+.btn-purple {
+  color: #fff;
+  background-color: #6f42c1; /* purple */
+  border-color: #6f42c1;
+}
+.btn-purple:hover {
+  color: #fff;
+  background-color: #5a339f;
+  border-color: #52308f;
+}
+.btn-purple:focus, .btn-purple.focus {
+  box-shadow: 0 0 0 0.2rem rgba(111, 66, 193, 0.5);
+}
+.btn-purple:active, .btn-purple.active,
+.show > .btn-purple.dropdown-toggle {
+  color: #fff;
+  background-color: #582e95;
+  border-color: #4d2883;
+}
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;

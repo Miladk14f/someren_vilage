@@ -1,0 +1,41 @@
+@model someren_vilage.Models.Activity
+
+@{
+    ViewData["Title"] = "Edit Activity";
+}
+
+<h2>Edit Activity</h2>
+
+<form asp-controller="Activity" asp-action="Edit" method="post">
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <input type="hidden" asp-for="ActivityId" />
+
+    <div class="mb-3">
+        <label class="form-label">Name</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Day</label>
+        <select asp-for="Day" class="form-select">
+            <option value="">-- Select Day --</option>
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+            <option value="Saturday">Saturday</option>
+            <option value="Sunday">Sunday</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Time</label>
+        <input asp-for="TimeOfDay" class="form-control" type="time" step="1" />
+        <span asp-validation-for="TimeOfDay" class="text-danger"></span>
+    </div>
+    <button class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary ms-2">Back</a>
+</form>
+
+
