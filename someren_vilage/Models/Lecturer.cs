@@ -5,7 +5,7 @@ namespace someren_vilage.Models
 {
     public class Lecturer
     {
-        public int LecturerId { get; set; }
+        public int LecturerId { get; set; } // incremented by DB
 
         [Required]
         public string FirstName { get; set; }
@@ -15,10 +15,18 @@ namespace someren_vilage.Models
 
         public string PhoneNumber { get; set; }
 
-        public byte? Age { get; set; }
+        public int Age { get; set; }
 
         public int RoomId { get; set; }
-        public Room Room { get; set; }
+        //public Room Room { get; set; }
 
+        public Lecturer(string firstName, string lastName, string phoneNumber, int age, int roomId)
+        {
+            FirstName = firstName;
+            LastName = lastName;
+            PhoneNumber = phoneNumber;
+            Age = age;
+            RoomId = roomId;
+        }
     }
 }
