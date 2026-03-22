@@ -17,11 +17,28 @@ namespace someren_vilage.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string sort)
         {
             try
             {
-                var rooms = _repo.GetAll();
+                var rooms = _repo.GetAll() ?? Enumerable.Empty<Room>();
+
+                rooms = sort switch
+                {
+                    "floor" => rooms.OrderBy(r => r.Floor),
+                    "floor_desc" => rooms.OrderByDescending(r => r.Floor),
+                    "type" => rooms.OrderBy(r => r.RoomType),
+                    "type_desc" => rooms.OrderByDescending(r => r.RoomType),
+                    "capacity" => rooms.OrderBy(r => r.Capacity),
+                    "capacity_desc" => rooms.OrderByDescending(r => r.Capacity),
+                    "building" => rooms.OrderBy(r => r.BuildingName),
+                    "building_desc" => rooms.OrderByDescending(r => r.BuildingName),
+                    "id_desc" => rooms.OrderByDescending(r => r.RoomId),
+                    _ => rooms.OrderBy(r => r.RoomId),
+                };
+
+                ViewData["CurrentSort"] = sort;
+
                 return View(rooms);
             }
             catch (Exception ex)
@@ -116,23 +133,6 @@ namespace someren_vilage.Controllers
             }
         }
 
-        public IActionResult Delete(int id)
-        {
-            try
-            {
-                var room = _repo.GetById(id);
-                if (room == null)
-                    return NotFound();
-
-                return View(room);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error loading room for delete id {Id}", id);
-                return StatusCode(500, "Unable to load room for delete.");
-            }
-        }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ActionName("Delete")]
@@ -141,6 +141,12 @@ namespace someren_vilage.Controllers
             try
             {
                 _repo.Delete(id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (InvalidOperationException ex) when (ex.InnerException is Microsoft.Data.SqlClient.SqlException sqlEx && sqlEx.Number == 547)
+            {
+                _logger.LogWarning(ex, "Cannot delete room id {Id} due to foreign key constraint", id);
+                TempData["DeleteError"] = $"Cannot delete room {id}: this room is currently assigned to one or more students or lecturers. Please reassign or remove them first.";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)

@@ -10,5 +10,15 @@ namespace someren_vilage.Repositorie
         void Add(Activity activity);
         void Update(Activity activity);
         void Delete(int activityId);
+        List<Models.Student> GetParticipants(int activityId);
+        void AddParticipant(int activityId, int studentNumber);
+        void RemoveParticipant(int activityId, int studentNumber);
+
+        List<Models.Lecturer> GetLecturers(int activityId);
+        void AddLecturer(int activityId, int lecturerId);
+        void RemoveLecturer(int activityId, int lecturerId);
+
+        List<Models.Student> GetAllStudents();
+        List<Models.Lecturer> GetAllLecturers();
     }
 }

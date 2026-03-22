@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
 using someren_vilage.Models;
 
 namespace someren_vilage.Repositorie
@@ -195,6 +192,12 @@ WHERE room_id = @id";
             {
                 connection.Open();
                 command.ExecuteNonQuery();
+            }
+            catch (SqlException ex) when (ex.Number == 547)
+            {
+                throw new InvalidOperationException(
+                    "This room cannot be deleted because it is currently assigned to one or more students or lecturers. " +
+                    "Please reassign or remove them from this room first.", ex);
             }
             catch (SqlException ex)
             {

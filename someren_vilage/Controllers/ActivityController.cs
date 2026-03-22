@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using someren_vilage.Models;
 using someren_vilage.Repositorie;
+using System.Linq;
 
 namespace someren_vilage.Controllers
 {
@@ -15,11 +16,133 @@ namespace someren_vilage.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public IActionResult Participent(int id)
         {
             try
             {
-                var activities = _repo.GetAll();
+                var activity = _repo.GetById(id);
+                if (activity == null) return NotFound();
+
+                var model = new ViewModels.ActivityParticipantsViewModel
+                {
+                    Activity = activity,
+                    Participants = _repo.GetParticipants(id),
+                    Lecturers = _repo.GetLecturers(id),
+                    AllStudents = _repo.GetAllStudents(),
+                    AllLecturers = _repo.GetAllLecturers()
+                };
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading participants for activity {Id}", id);
+                return StatusCode(500, "Unable to load participants.");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddParticipant(int activityId, int studentNumber)
+        {
+            try
+            {
+                _repo.AddParticipant(activityId, studentNumber);
+                TempData["Success"] = "Participant added.";
+                return RedirectToAction(nameof(Participent), new { id = activityId });
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogWarning(ex, "Business rule prevented adding participant {Student} to activity {Activity}", studentNumber, activityId);
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(Participent), new { id = activityId });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error adding participant {Student} to activity {Activity}", studentNumber, activityId);
+                TempData["Error"] = "Unable to add participant.";
+                return RedirectToAction(nameof(Participent), new { id = activityId });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult RemoveParticipant(int activityId, int studentNumber)
+        {
+            try
+            {
+                _repo.RemoveParticipant(activityId, studentNumber);
+                TempData["Success"] = "Participant removed.";
+                return RedirectToAction(nameof(Participent), new { id = activityId });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error removing participant {Student} from activity {Activity}", studentNumber, activityId);
+                TempData["Error"] = "Unable to remove participant.";
+                return RedirectToAction(nameof(Participent), new { id = activityId });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddLecturer(int activityId, int lecturerId)
+        {
+            try
+            {
+                _repo.AddLecturer(activityId, lecturerId);
+                TempData["Success"] = "Lecturer added.";
+                return RedirectToAction(nameof(Participent), new { id = activityId });
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogWarning(ex, "Business rule prevented adding lecturer {Lecturer} to activity {Activity}", lecturerId, activityId);
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(Participent), new { id = activityId });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error adding lecturer {Lecturer} to activity {Activity}", lecturerId, activityId);
+                TempData["Error"] = "Unable to add lecturer.";
+                return RedirectToAction(nameof(Participent), new { id = activityId });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult RemoveLecturer(int activityId, int lecturerId)
+        {
+            try
+            {
+                _repo.RemoveLecturer(activityId, lecturerId);
+                TempData["Success"] = "Lecturer removed.";
+                return RedirectToAction(nameof(Participent), new { id = activityId });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error removing lecturer {Lecturer} from activity {Activity}", lecturerId, activityId);
+                TempData["Error"] = "Unable to remove lecturer.";
+                return RedirectToAction(nameof(Participent), new { id = activityId });
+            }
+        }
+
+        public IActionResult Index(string sort)
+        {
+            try
+            {
+                var activities = _repo.GetAll() ?? Enumerable.Empty<Activity>();
+                activities = sort switch
+                {
+                    "name" => activities.OrderBy(a => a.Name),
+                    "name_desc" => activities.OrderByDescending(a => a.Name),
+                    "day" => activities.OrderBy(a => a.Day),
+                    "day_desc" => activities.OrderByDescending(a => a.Day),
+                    "time" => activities.OrderBy(a => a.TimeOfDay),
+                    "time_desc" => activities.OrderByDescending(a => a.TimeOfDay),
+                    _ => activities.OrderBy(a => a.Name),
+                };
+
+                ViewData["CurrentSort"] = sort;
+
                 return View(activities);
             }
             catch (Exception ex)
@@ -131,23 +254,6 @@ namespace someren_vilage.Controllers
             }
         }
 
-        public IActionResult Delete(int id)
-        {
-            try
-            {
-                var activity = _repo.GetById(id);
-                if (activity == null)
-                    return NotFound();
-
-                return View(activity);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error loading activity for delete id {Id}", id);
-                return StatusCode(500, "Unable to load activity for delete.");
-            }
-        }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ActionName("Delete")]
@@ -156,6 +262,12 @@ namespace someren_vilage.Controllers
             try
             {
                 _repo.Delete(id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (InvalidOperationException ex) when (ex.InnerException is Microsoft.Data.SqlClient.SqlException sqlEx && sqlEx.Number == 547)
+            {
+                _logger.LogWarning(ex, "Cannot delete activity id {Id} due to foreign key constraint", id);
+                TempData["DeleteError"] = $"Cannot delete activity {id}: this activity is currently assigned to one or more students or lecturers. Please remove them from this activity first.";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
