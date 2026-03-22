@@ -1,0 +1,56 @@
+@model IEnumerable<someren_vilage.Models.Student>
+
+@{
+    ViewData["Title"] = "Students";
+}
+
+<div class="d-flex align-items-center mb-3">
+    <a asp-controller="Students" asp-action="Create" class="btn btn-success me-2">New student</a>
+    <h2 class="m-0">Students</h2>
+</div>
+
+@{
+    var hasAny = false;
+}
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>Student number</th>
+        <th>First name</th>
+        <th>Last name</th>
+        <th>Phone number</th>
+        <th>Class</th>
+        <th>Room id</th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (Model != null)
+    {
+        foreach (var item in Model)
+        {
+            hasAny = true;
+            <tr>
+                <td>@item.StudentNumber</td>
+                <td>@item.FirstName</td>
+                <td>@item.LastName</td>
+                <td>@item.PhoneNumber</td>
+                <td>@item.Class</td>
+                <td>@item.RoomId</td>
+                <td>
+                    <a asp-controller="Students" asp-action="Edit" asp-route-id="@item.StudentNumber" class="btn btn-sm btn-primary me-1">Edit</a>
+
+                    <form asp-controller="Students" asp-action="Delete" asp-route-id="@item.StudentNumber" method="post" style="display:inline" onsubmit="return confirm('Delete this student?');">
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
+
+@if (!hasAny)
+{
+    <div class="alert alert-info">No student available.</div>
+}

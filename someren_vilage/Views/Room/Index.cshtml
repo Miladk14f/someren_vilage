@@ -1,0 +1,55 @@
+﻿@model IEnumerable<someren_vilage.Models.Room>
+
+@{
+    ViewData["Title"] = "Rooms";
+}
+
+<div class="d-flex align-items-center mb-3">
+    <a asp-controller="Room" asp-action="Create" class="btn btn-success me-2">Create Room</a>
+    <h2 class="m-0">All Rooms</h2>
+</div>
+
+@{
+    var hasAny = false;
+}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>RoomId</th>
+            <th>Floor</th>
+            <th>Type</th>
+            <th>Capacity</th>
+            <th>Building</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {
+            foreach (var item in Model)
+            {
+                hasAny = true;
+                <tr>
+                    <td>@item.RoomId</td>
+                    <td>@item.Floor</td>
+                    <td>@item.RoomType</td>
+                    <td>@item.Capacity</td>
+                    <td>@item.BuildingName</td>
+                    <td>
+                        <a asp-controller="Room" asp-action="Edit" asp-route-id="@item.RoomId" class="btn btn-sm btn-primary me-1">Edit</a>
+
+                        <form asp-controller="Room" asp-action="Delete" asp-route-id="@item.RoomId" method="post" style="display:inline" onsubmit="return confirm('Delete this room?');">
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@if (!hasAny)
+{
+    <div class="alert alert-info">No rooms available.</div>
+}

@@ -1,15 +1,15 @@
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<someren_vilage.Repositorie.IRoomRepository, someren_vilage.Repositorie.DbRoomRepository>();
+builder.Services.AddScoped<someren_vilage.Repositorie.IActivityRepository, someren_vilage.Repositorie.DbActivityRepository>();
+builder.Services.AddScoped<someren_vilage.Repositorie.IStudentRepository, someren_vilage.Repositorie.DbStudentRepository>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
