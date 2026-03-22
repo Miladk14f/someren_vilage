@@ -199,8 +199,7 @@ WHERE la.lecturer_id = @lid AND a.day = @day AND a.time_of_day = @time AND la.ac
             string firstname = GetStringOrEmpty(reader, "first_name");
             string lastname = GetStringOrEmpty(reader, "last_name");
             string phonenumber = GetStringOrEmpty(reader, "phone_number");
-            byte? age = null;
-            try { age = reader.IsDBNull(reader.GetOrdinal("age")) ? null : (byte?)reader.GetByte(reader.GetOrdinal("age")); } catch { }
+            int age = reader.IsDBNull(reader.GetOrdinal("age")) ? 0 : Convert.ToInt32(reader["age"]);
             int roomid = reader.GetInt32(reader.GetOrdinal("room_id"));
 
             return new Lecturer()
