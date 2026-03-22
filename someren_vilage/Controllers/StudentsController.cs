@@ -23,6 +23,9 @@ public class StudentsController : Controller
     [HttpGet]
     public IActionResult Create()
     {
+        var rooms = _repo.GetAllRooms();
+        ViewBag.Rooms = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(rooms, "RoomId", "RoomId");
+        
         return View();
     }
 
@@ -73,18 +76,31 @@ public class StudentsController : Controller
         var student = _repo.GetById(id);
         if (student == null) return NotFound();
 
+        var rooms = _repo.GetAllRooms();
+        
+        ViewBag.Rooms = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(rooms, "RoomId", "RoomId", student.RoomId);
+        
         return View(student);
     }
 
     [HttpPost]
     public IActionResult Edit(someren_vilage.Models.Student student)
     {
-        if (ModelState.IsValid)
+        try 
         {
-            _repo.Update(student);
-            return RedirectToAction("Index");
+            if (ModelState.IsValid)
+            {
+                _repo.Update(student);
+                return RedirectToAction("Index");
+            }
         }
-
+        catch (SqlException ex)
+        {
+            ModelState.AddModelError("", "Database error: " + ex.Message);
+        }
+        
+        ViewBag.Rooms = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_repo.GetAllRooms(), "RoomId", "RoomId", student.RoomId);
+    
         return View(student);
     }
 

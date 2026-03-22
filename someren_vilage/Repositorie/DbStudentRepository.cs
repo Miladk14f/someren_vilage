@@ -139,5 +139,19 @@ namespace someren_vilage.Repositorie
                 return string.Empty;
             }
         }
+        public List<Room> GetAllRooms()
+        {
+            List<Room> rooms = new List<Room>();
+            using var connection = new SqlConnection(connectionString);
+            using var command = new SqlCommand("SELECT room_id FROM dbo.Room", connection);
+
+            connection.Open();
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                rooms.Add(new Room { RoomId = (int)reader["room_id"] });
+            }
+            return rooms;
+        }
     }
 }

@@ -10,5 +10,6 @@ namespace someren_vilage.Repositorie
         void Add(Student student);
         void Update(Student student);
         void Delete(int studentid);
+        List<Room> GetAllRooms();
     }
 }

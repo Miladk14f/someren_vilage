@@ -32,7 +32,10 @@
 
     <div class="mb-3">
         <label asp-for="RoomId" class="form-label">Room ID</label>
-        <input asp-for="RoomId" class="form-control" />
+        <select asp-for="RoomId" class="form-control" asp-items="ViewBag.Rooms">
+            <option value="">-- Select a Room --</option>
+        </select>
+        <span asp-validation-for="RoomId" class="text-danger"></span>
     </div>
 
     <button type="submit" class="btn btn-primary">Update Student</button>
