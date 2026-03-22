@@ -254,23 +254,6 @@ namespace someren_vilage.Controllers
             }
         }
 
-        public IActionResult Delete(int id)
-        {
-            try
-            {
-                var activity = _repo.GetById(id);
-                if (activity == null)
-                    return NotFound();
-
-                return View(activity);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error loading activity for delete id {Id}", id);
-                return StatusCode(500, "Unable to load activity for delete.");
-            }
-        }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ActionName("Delete")]
@@ -279,6 +262,12 @@ namespace someren_vilage.Controllers
             try
             {
                 _repo.Delete(id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (InvalidOperationException ex) when (ex.InnerException is Microsoft.Data.SqlClient.SqlException sqlEx && sqlEx.Number == 547)
+            {
+                _logger.LogWarning(ex, "Cannot delete activity id {Id} due to foreign key constraint", id);
+                TempData["DeleteError"] = $"Cannot delete activity {id}: this activity is currently assigned to one or more students or lecturers. Please remove them from this activity first.";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)

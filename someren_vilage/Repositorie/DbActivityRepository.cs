@@ -39,7 +39,7 @@ WHERE sa.activity_id = @id";
         public void AddParticipant(int activityId, int studentNumber)
         {
 
-            const string activityQuery = "SELECT day, time_of_day FROM dbo.Activity WHERE activity_id = @aid";
+            const string activityQuery = $"SELECT {ActivityColumns} FROM dbo.Activity WHERE activity_id = @aid";
             using var conn = new SqlConnection(connectionString);
             using var actCmd = new SqlCommand(activityQuery, conn);
             actCmd.Parameters.Add(new SqlParameter("@aid", SqlDbType.Int) { Value = activityId });
@@ -110,7 +110,7 @@ WHERE la.activity_id = @id";
             using var connection = new SqlConnection(connectionString);
             connection.Open();
 
-            const string activityQuery = "SELECT day, time_of_day FROM dbo.Activity WHERE activity_id = @aid";
+            const string activityQuery = $"SELECT {ActivityColumns} FROM dbo.Activity WHERE activity_id = @aid";
             using var actCmd = new SqlCommand(activityQuery, connection);
             actCmd.Parameters.Add(new SqlParameter("@aid", SqlDbType.Int) { Value = activityId });
             using var reader = actCmd.ExecuteReader(CommandBehavior.SingleRow);
@@ -428,6 +428,12 @@ SELECT CAST(SCOPE_IDENTITY() AS int);";
             {
                 connection.Open();
                 command.ExecuteNonQuery();
+            }
+            catch (SqlException ex) when (ex.Number == 547)
+            {
+                throw new InvalidOperationException(
+                    "This activity cannot be deleted because it is currently assigned to one or more students or lecturers. " +
+                    "Please remove them from this activity first.", ex);
             }
             catch (SqlException ex)
             {

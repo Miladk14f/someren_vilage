@@ -193,6 +193,12 @@ WHERE room_id = @id";
                 connection.Open();
                 command.ExecuteNonQuery();
             }
+            catch (SqlException ex) when (ex.Number == 547)
+            {
+                throw new InvalidOperationException(
+                    "This room cannot be deleted because it is currently assigned to one or more students or lecturers. " +
+                    "Please reassign or remove them from this room first.", ex);
+            }
             catch (SqlException ex)
             {
                 throw new InvalidOperationException($"SQL error executing Delete. Command: {command.CommandText} Params: @id={roomId}", ex);
