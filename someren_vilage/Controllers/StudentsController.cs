@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 
 namespace someren_vilage.Controllers;
 
@@ -28,10 +29,24 @@ public class StudentsController : Controller
     [HttpPost]
     public IActionResult Create(someren_vilage.Models.Student student)
     {
-        if (ModelState.IsValid)
+        try
         {
-            _repo.Add(student);
-            return RedirectToAction("Index");
+            if (ModelState.IsValid)
+            {
+                _repo.Add(student);
+                return RedirectToAction("Index");
+            }
+        }
+        catch (SqlException ex)
+        {
+            if (ex.Number == 2627 || ex.Number == 2601)
+            {
+                ModelState.AddModelError("StudentNumber", "A student with this number already exists.");
+            }
+            else
+            {
+                ModelState.AddModelError("", "A database error occurred: " + ex.Message);
+            }
         }
 
         return View(student);
