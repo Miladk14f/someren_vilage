@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
 using someren_vilage.Models;
 
 namespace someren_vilage.Repositorie

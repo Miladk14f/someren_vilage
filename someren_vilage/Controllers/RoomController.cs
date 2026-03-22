@@ -17,11 +17,28 @@ namespace someren_vilage.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string sort)
         {
             try
             {
-                var rooms = _repo.GetAll();
+                var rooms = _repo.GetAll() ?? Enumerable.Empty<Room>();
+
+                rooms = sort switch
+                {
+                    "floor" => rooms.OrderBy(r => r.Floor),
+                    "floor_desc" => rooms.OrderByDescending(r => r.Floor),
+                    "type" => rooms.OrderBy(r => r.RoomType),
+                    "type_desc" => rooms.OrderByDescending(r => r.RoomType),
+                    "capacity" => rooms.OrderBy(r => r.Capacity),
+                    "capacity_desc" => rooms.OrderByDescending(r => r.Capacity),
+                    "building" => rooms.OrderBy(r => r.BuildingName),
+                    "building_desc" => rooms.OrderByDescending(r => r.BuildingName),
+                    "id_desc" => rooms.OrderByDescending(r => r.RoomId),
+                    _ => rooms.OrderBy(r => r.RoomId),
+                };
+
+                ViewData["CurrentSort"] = sort;
+
                 return View(rooms);
             }
             catch (Exception ex)

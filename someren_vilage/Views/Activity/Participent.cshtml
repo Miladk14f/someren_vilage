@@ -1,0 +1,99 @@
+@model someren_vilage.ViewModels.ActivityParticipantsViewModel
+
+@{
+    ViewData["Title"] = "Participants";
+}
+
+<h2>Participants for @Model.Activity.Name</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<h4>Lecturers</h4>
+<table class="table">
+    <thead><tr><th>Id</th><th>Name</th><th></th></tr></thead>
+    <tbody>
+        @foreach (var l in Model.Lecturers)
+        {
+            <tr>
+                <td>@l.LecturerId</td>
+                <td>@l.FirstName @l.LastName</td>
+                <td>
+                    <form asp-controller="Activity" asp-action="RemoveLecturer" method="post" style="display:inline">
+                        <input type="hidden" name="activityId" value="@Model.Activity.ActivityId" />
+                        <input type="hidden" name="lecturerId" value="@l.LecturerId" />
+                        @Html.AntiForgeryToken()
+                        <button class="btn btn-sm btn-danger" type="submit" onclick="return confirm('Remove lecturer?')">Remove</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h5>Add lecturer</h5>
+<form asp-controller="Activity" asp-action="AddLecturer" method="post" class="row g-2">
+    <input type="hidden" name="activityId" value="@Model.Activity.ActivityId" />
+    <div class="col-auto">
+        <select name="lecturerId" class="form-select">
+            @foreach (var l in Model.AllLecturers)
+            {
+                <option value="@l.LecturerId">@l.LecturerId - @l.FirstName @l.LastName</option>
+            }
+        </select>
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-primary" type="submit">Add</button>
+    </div>
+    @Html.AntiForgeryToken()
+</form>
+
+<hr />
+
+    <h4>Students</h4>
+    <table class="table">
+        <thead><tr><th>Number</th><th>Name</th><th></th></tr></thead>
+        <tbody>
+            @foreach (var s in Model.Participants)
+            {
+                <tr>
+                    <td>@s.StudentNumber</td>
+                    <td>@s.FirstName @s.LastName</td>
+                    <td>
+                        <form asp-controller="Activity" asp-action="RemoveParticipant" method="post" style="display:inline">
+                            <input type="hidden" name="activityId" value="@Model.Activity.ActivityId" />
+                            <input type="hidden" name="studentNumber" value="@s.StudentNumber" />
+                            @Html.AntiForgeryToken()
+                            <button class="btn btn-sm btn-danger" type="submit" onclick="return confirm('Remove participant?')">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <h5>Add student</h5>
+    <form asp-controller="Activity" asp-action="AddParticipant" method="post" class="row g-2">
+        <input type="hidden" name="activityId" value="@Model.Activity.ActivityId" />
+        <div class="col-auto">
+        <select name="studentNumber" class="form-select">
+            @foreach (var s in Model.AllStudents)
+            {
+                var assigned = Model.Participants.Any(p => p.StudentNumber == s.StudentNumber);
+                <option value="@s.StudentNumber" disabled="@(assigned ? "disabled" : null)">
+                    @s.StudentNumber - @s.FirstName @s.LastName@(assigned ? " (assigned)" : "")
+                </option>
+            }
+        </select>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-primary" type="submit">Add</button>
+        </div>
+        @Html.AntiForgeryToken()
+    </form>

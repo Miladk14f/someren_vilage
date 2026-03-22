@@ -5,9 +5,29 @@
 }
 
 <div class="d-flex align-items-center mb-3">
-    <a asp-controller="Room" asp-action="Create" class="btn btn-success me-2">Create Room</a>
+
     <h2 class="m-0">All Rooms</h2>
 </div>
+
+<div class="d-flex align-items-center mb-3">
+    <a asp-controller="Room" asp-action="Create" class="btn btn-success me-2">Create Room</a>
+</div>
+
+<form method="get" class="mb-3">
+    <label for="sortSelect" class="form-label">Sort by:</label>
+    <select id="sortSelect" name="sort" class="form-select w-auto d-inline-block me-2" onchange="this.form.submit()">
+        <option value="" selected="@(ViewData["CurrentSort"] == null ? "selected" : null)">Number</option>
+        <option value="id_desc" selected="@(ViewData["CurrentSort"] as string == "id_desc" ? "selected" : null)">Number desc</option>
+        <option value="floor" selected="@(ViewData["CurrentSort"] as string == "floor" ? "selected" : null)">Floor</option>
+        <option value="floor_desc" selected="@(ViewData["CurrentSort"] as string == "floor_desc" ? "selected" : null)">Floor desc</option>
+        <option value="type" selected="@(ViewData["CurrentSort"] as string == "type" ? "selected" : null)">Type</option>
+        <option value="type_desc" selected="@(ViewData["CurrentSort"] as string == "type_desc" ? "selected" : null)">Type desc</option>
+        <option value="capacity" selected="@(ViewData["CurrentSort"] as string == "capacity" ? "selected" : null)">Capacity</option>
+        <option value="capacity_desc" selected="@(ViewData["CurrentSort"] as string == "capacity_desc" ? "selected" : null)">Capacity desc</option>
+        <option value="building" selected="@(ViewData["CurrentSort"] as string == "building" ? "selected" : null)">Building</option>
+        <option value="building_desc" selected="@(ViewData["CurrentSort"] as string == "building_desc" ? "selected" : null)">Building desc</option>
+    </select>
+</form>
 
 @{
     var hasAny = false;
@@ -16,7 +36,7 @@
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>RoomId</th>
+            <th>Room Number</th>
             <th>Floor</th>
             <th>Type</th>
             <th>Capacity</th>
