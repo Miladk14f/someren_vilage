@@ -20,13 +20,19 @@ namespace someren_vilage.Models
         public int RoomId { get; set; }
         //public Room Room { get; set; }
 
-        public Lecturer(string firstName, string lastName, string phoneNumber, int age, int roomId)
-        {
-            FirstName = firstName;
-            LastName = lastName;
-            PhoneNumber = phoneNumber;
-            Age = age;
-            RoomId = roomId;
-        }
+        //public Lecturer() 
+        //{
+        //}
+
+        //public Lecturer(int lecturerId, string firstName, string lastName, string phoneNumber, int age, int roomId)
+        //{
+        //    //
+        //    LecturerId = lecturerId;
+        //    FirstName = firstName;
+        //    LastName = lastName;
+        //    PhoneNumber = phoneNumber;
+        //    Age = age;
+        //    RoomId = roomId;
+        //}
     }
 }

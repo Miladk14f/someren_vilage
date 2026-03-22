@@ -1,5 +1,38 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿
+
+@model someren_vilage.Models.Lecturer;
+
 @{
 }
+
+<h4>Delete a Lecturer</h4>
+
+<form action="/Lecturer/Delete" method="POST">
+    <input hidden type="number" name="LecturerId" value="@Model?.LecturerId" />
+
+    <div class="form-group py-2">
+        <label for="firstName">First name:</label>
+        <input type="text" name="FirstName" id="FirstName" class="form-control" required readonly value="@Model?.FirstName" /> *@
+    </div>
+
+    <div class="form-group py-2">
+        <label for="lastName">Last name:</label>
+        <input type="text" name="LastName" id="LastName" class="form-control" required value="@Model?.LastName" />
+    </div>
+
+    <div class="form-group py-2">
+        <label for="phoneNumber">Phone number</label>
+        <input type="text" name="PhoneNumber" id="PhoneNumber" class="form-control" required value="@Model?.PhoneNumber" />
+    </div>
+
+    <div class="form-group py-2">
+        <label for="Age">Age</label>
+        <input type="number" name="Age" id="Age" class="form-control" required value="@Model?.Age" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Delete</button>
+
+</form>
+
+<a href="//Lecture/Index">Back to List</a>
+
