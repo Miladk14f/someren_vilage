@@ -23,7 +23,7 @@ namespace someren_vilage.Repositorie
         public List<Student> GetAll()
         {
             var student = new List<Student>();
-            const string query = $"SELECT {StudentColumns} FROM dbo.Student";
+            const string query = $"SELECT {StudentColumns} FROM dbo.Student ORDER BY last_name ASC";
 
             using var connection = new SqlConnection(connectionString);
             using var command = new SqlCommand(query, connection);
@@ -38,24 +38,74 @@ namespace someren_vilage.Repositorie
             return student;
         }
 
-        public Room? GetById(int studentid)
+        public Student? GetById(int studentid)
         {
-            throw new NotImplementedException();
+            const string query = $"SELECT {StudentColumns} FROM dbo.Student WHERE student_number = @Id";
+            using var connection = new SqlConnection(connectionString);
+            using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@Id", studentid);
+            
+            connection.Open();
+            using var reader = command.ExecuteReader();
+
+            if (reader.Read())
+            {
+                return ReadStudent(reader);
+            }
+
+            return null;
         }
 
         public void Add(Student student)
         {
-            throw new NotImplementedException();
+            const string query = "INSERT INTO dbo.Student (student_number, first_name, last_name, phone_number, class, room_id) " +
+                                 "VALUES (@StudentNumber, @FirstName, @LastName, @PhoneNumber, @Class, @RoomId)";
+
+            using var connection = new SqlConnection(connectionString);
+            using var command = new SqlCommand(query, connection);
+
+            command.Parameters.AddWithValue("@StudentNumber", student.StudentNumber);
+            command.Parameters.AddWithValue("@FirstName", student.FirstName);
+            command.Parameters.AddWithValue("@LastName", student.LastName);
+            command.Parameters.AddWithValue("@PhoneNumber", (object)student.PhoneNumber ?? DBNull.Value);
+            command.Parameters.AddWithValue("@Class", student.Class);
+            command.Parameters.AddWithValue("@RoomId", student.RoomId);
+
+            connection.Open();
+            command.ExecuteNonQuery();
         }
 
         public void Update(Student student)
         {
-            throw new NotImplementedException();
+                const string query = "UPDATE dbo.Student SET first_name = @FirstName, last_name = @LastName, " +
+                                     "phone_number = @PhoneNumber, class = @Class, room_id = @RoomId " +
+                                     "WHERE student_number = @StudentNumber";
+
+                using var connection = new SqlConnection(connectionString);
+                using var command = new SqlCommand(query, connection);
+
+                command.Parameters.AddWithValue("@StudentNumber", student.StudentNumber);
+                command.Parameters.AddWithValue("@FirstName", student.FirstName);
+                command.Parameters.AddWithValue("@LastName", student.LastName);
+                command.Parameters.AddWithValue("@PhoneNumber", (object)student.PhoneNumber ?? DBNull.Value);
+                command.Parameters.AddWithValue("@Class", student.Class);
+                command.Parameters.AddWithValue("@RoomId", student.RoomId);
+
+                connection.Open();
+                command.ExecuteNonQuery();
         }
 
         public void Delete(int studentid)
         {
-            throw new NotImplementedException();
+            const string query = "DELETE FROM dbo.Student WHERE student_number = @Id";
+
+            using var connection = new SqlConnection(connectionString);
+            using var command = new SqlCommand(query, connection);
+    
+            command.Parameters.AddWithValue("@Id", studentid);
+
+            connection.Open();
+            command.ExecuteNonQuery();
         }
 
         private static Student ReadStudent (SqlDataReader reader)
@@ -88,6 +138,20 @@ namespace someren_vilage.Repositorie
             {
                 return string.Empty;
             }
+        }
+        public List<Room> GetAllRooms()
+        {
+            List<Room> rooms = new List<Room>();
+            using var connection = new SqlConnection(connectionString);
+            using var command = new SqlCommand("SELECT room_id FROM dbo.Room", connection);
+
+            connection.Open();
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                rooms.Add(new Room { RoomId = (int)reader["room_id"] });
+            }
+            return rooms;
         }
     }
 }
