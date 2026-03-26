@@ -1,64 +1,44 @@
 using Microsoft.AspNetCore.Mvc;
 using someren_vilage.Models;
-using someren_vilage.Repositorie;
-using Microsoft.Extensions.Logging;
-using System.Diagnostics;
+using someren_vilage.Repositorie.RoomRepo;
 
 namespace someren_vilage.Controllers
 {
     public class RoomController : Controller
     {
         private readonly IRoomRepository _repo;
-        private readonly ILogger<RoomController> _logger;
 
-        public RoomController(IRoomRepository repo, ILogger<RoomController> logger)
+        public RoomController(IRoomRepository repo)
         {
             _repo = repo;
-            _logger = logger;
         }
 
         public IActionResult Index(string sort)
         {
-            try
+            List<Room> rooms = _repo.GetAll();
+
+            rooms = sort switch
             {
-                var rooms = _repo.GetAll() ?? Enumerable.Empty<Room>();
+                "floor" => rooms.OrderBy(r => r.Floor).ToList(),
+                "floor_desc" => rooms.OrderByDescending(r => r.Floor).ToList(),
+                "type" => rooms.OrderBy(r => r.RoomType).ToList(),
+                "type_desc" => rooms.OrderByDescending(r => r.RoomType).ToList(),
+                "capacity" => rooms.OrderBy(r => r.Capacity).ToList(),
+                "capacity_desc" => rooms.OrderByDescending(r => r.Capacity).ToList(),
+                "building" => rooms.OrderBy(r => r.BuildingName).ToList(),
+                "building_desc" => rooms.OrderByDescending(r => r.BuildingName).ToList(),
+                "id_desc" => rooms.OrderByDescending(r => r.RoomId).ToList(),
+                _ => rooms.OrderBy(r => r.RoomId).ToList(),
+            };
 
-                rooms = sort switch
-                {
-                    "floor" => rooms.OrderBy(r => r.Floor),
-                    "floor_desc" => rooms.OrderByDescending(r => r.Floor),
-                    "type" => rooms.OrderBy(r => r.RoomType),
-                    "type_desc" => rooms.OrderByDescending(r => r.RoomType),
-                    "capacity" => rooms.OrderBy(r => r.Capacity),
-                    "capacity_desc" => rooms.OrderByDescending(r => r.Capacity),
-                    "building" => rooms.OrderBy(r => r.BuildingName),
-                    "building_desc" => rooms.OrderByDescending(r => r.BuildingName),
-                    "id_desc" => rooms.OrderByDescending(r => r.RoomId),
-                    _ => rooms.OrderBy(r => r.RoomId),
-                };
+            ViewData["CurrentSort"] = sort;
 
-                ViewData["CurrentSort"] = sort;
-
-                return View(rooms);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error loading room list");
-                return StatusCode(500, "Unable to load rooms.");
-            }
+            return View(rooms);
         }
 
         public IActionResult Create()
         {
-            try
-            {
-                return View(new Room());
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error displaying create room page");
-                return StatusCode(500, "Unable to display create page.");
-            }
+            return View(new Room());
         }
 
         [HttpPost]
@@ -69,37 +49,18 @@ namespace someren_vilage.Controllers
             {
                 return View(room);
             }
-            try
-            {
-                _repo.Add(room);
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error creating room");
-                ModelState.AddModelError("", "Unable to create room. " + ex.Message);
-                return View(room);
-            }
+
+            _repo.Add(room);
+            return RedirectToAction(nameof(Index));
         }
 
         public IActionResult Edit(int id)
         {
-            try
-            {
-                var room = _repo.GetById(id);
-                if (room == null)
-                    return NotFound();
+            Room? room = _repo.GetById(id);
+            if (room == null)
+                return NotFound();
 
-                _logger.LogDebug("Edit GET room {Id}: Floor={Floor}, Type={Type}, Capacity={Capacity}",
-                    room.RoomId, room.Floor, room.RoomType, room.Capacity);
-
-                return View(room);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error loading room for edit id {Id}", id);
-                return StatusCode(500, "Unable to load room for edit.");
-            }
+            return View(room);
         }
 
         [HttpPost]
@@ -109,28 +70,8 @@ namespace someren_vilage.Controllers
             if (!ModelState.IsValid)
                 return View(room);
 
-            if (room.RoomId <= 0)
-            {
-                ModelState.AddModelError("", "Invalid room id.");
-                return View(room);
-            }
-
-            try
-            {
-                _repo.Update(room);
-                return RedirectToAction(nameof(Index));
-            }
-            catch (InvalidOperationException ex)
-            {
-                _logger.LogWarning(ex, "Update failed for room id {RoomId}", room.RoomId);
-                return NotFound();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unexpected error updating room id {RoomId}", room.RoomId);
-                ModelState.AddModelError("", "Unable to update room. " + ex.Message);
-                return View(room);
-            }
+            _repo.Update(room);
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -138,28 +79,8 @@ namespace someren_vilage.Controllers
         [ActionName("Delete")]
         public IActionResult DeleteConfirmed(int id)
         {
-            try
-            {
-                _repo.Delete(id);
-                return RedirectToAction(nameof(Index));
-            }
-            catch (InvalidOperationException ex) when (ex.InnerException is Microsoft.Data.SqlClient.SqlException sqlEx && sqlEx.Number == 547)
-            {
-                _logger.LogWarning(ex, "Cannot delete room id {Id} due to foreign key constraint", id);
-                TempData["DeleteError"] = $"Cannot delete room {id}: this room is currently assigned to one or more students or lecturers. Please reassign or remove them first.";
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error deleting room id {Id}", id);
-                return StatusCode(500, "Unable to delete room.");
-            }
-        }
-[HttpPost]  
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = System.Diagnostics.Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            _repo.Delete(id);
+            return RedirectToAction(nameof(Index));
         }
     }
 }

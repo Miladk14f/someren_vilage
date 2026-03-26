@@ -38,21 +38,25 @@
 </table>
 
 <h5>Add lecturer</h5>
-<form asp-controller="Activity" asp-action="AddLecturer" method="post" class="row g-2">
-    <input type="hidden" name="activityId" value="@Model.Activity.ActivityId" />
-    <div class="col-auto">
-        <select name="lecturerId" class="form-select">
-            @foreach (var l in Model.AllLecturers)
-            {
-                <option value="@l.LecturerId">@l.LecturerId - @l.FirstName @l.LastName</option>
-            }
-        </select>
+<div class="row">
+    <div class="col-md-6">
+        <form asp-controller="Activity" asp-action="AddLecturer" method="post">
+            <input type="hidden" name="activityId" value="@Model.Activity.ActivityId" />
+            <div class="mb-3">
+                <label class="form-label">Select Lecturer</label>
+                <select name="lecturerId" class="form-control">
+                    <option value="">-- Select a Lecturer --</option>
+                    @foreach (var l in Model.AllLecturers)
+                    {
+                        <option value="@l.LecturerId">@l.LecturerId - @l.FirstName @l.LastName</option>
+                    }
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Add</button>
+            @Html.AntiForgeryToken()
+        </form>
     </div>
-    <div class="col-auto">
-        <button class="btn btn-primary" type="submit">Add</button>
-    </div>
-    @Html.AntiForgeryToken()
-</form>
+</div>
 
 <hr />
 
@@ -79,21 +83,25 @@
     </table>
 
     <h5>Add student</h5>
-    <form asp-controller="Activity" asp-action="AddParticipant" method="post" class="row g-2">
-        <input type="hidden" name="activityId" value="@Model.Activity.ActivityId" />
-        <div class="col-auto">
-        <select name="studentNumber" class="form-select">
-            @foreach (var s in Model.AllStudents)
-            {
-                var assigned = Model.Participants.Any(p => p.StudentNumber == s.StudentNumber);
-                <option value="@s.StudentNumber" disabled="@(assigned ? "disabled" : null)">
-                    @s.StudentNumber - @s.FirstName @s.LastName@(assigned ? " (assigned)" : "")
-                </option>
-            }
-        </select>
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-controller="Activity" asp-action="AddParticipant" method="post">
+                <input type="hidden" name="activityId" value="@Model.Activity.ActivityId" />
+                <div class="mb-3">
+                    <label class="form-label">Select Student</label>
+                    <select name="studentNumber" class="form-control">
+                        <option value="">-- Select a Student --</option>
+                        @foreach (var s in Model.AllStudents)
+                        {
+                            var assigned = Model.Participants.Any(p => p.StudentNumber == s.StudentNumber);
+                            <option value="@s.StudentNumber" disabled="@(assigned ? "disabled" : null)">
+                                @s.StudentNumber - @s.FirstName @s.LastName@(assigned ? " (assigned)" : "")
+                            </option>
+                        }
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Add</button>
+                @Html.AntiForgeryToken()
+            </form>
         </div>
-        <div class="col-auto">
-            <button class="btn btn-primary" type="submit">Add</button>
-        </div>
-        @Html.AntiForgeryToken()
-    </form>
+    </div>

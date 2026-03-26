@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using someren_vilage.Models;
 
-namespace someren_vilage.Repositorie
+namespace someren_vilage.Repositorie.StudentRepo
 {
     public interface IStudentRepository
     {
@@ -10,6 +10,5 @@ namespace someren_vilage.Repositorie
         void Add(Student student);
         void Update(Student student);
         void Delete(int studentid);
-        List<Room> GetAllRooms();
     }
 }
