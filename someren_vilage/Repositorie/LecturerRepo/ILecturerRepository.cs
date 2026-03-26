@@ -1,6 +1,6 @@
 ﻿using someren_vilage.Models;
 
-namespace someren_vilage.Repositorie
+namespace someren_vilage.Repositorie.LecturerRepo
 {
     public interface ILecturerRepository 
     {

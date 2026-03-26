@@ -1,107 +1,78 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
+using someren_vilage.Models;
+using someren_vilage.Repositorie.StudentRepo;
+using someren_vilage.Repositorie.RoomRepo;
 
-namespace someren_vilage.Controllers;
-
-public class StudentsController : Controller
+namespace someren_vilage.Controllers
 {
-    private readonly someren_vilage.Repositorie.IStudentRepository _repo;
-    private readonly ILogger<StudentsController> _logger;
-
-    public StudentsController(someren_vilage.Repositorie.IStudentRepository repo, ILogger<StudentsController> logger)
+    public class StudentsController : Controller
     {
-        _repo = repo;
-        _logger = logger;
-    }
+        private readonly IStudentRepository _repo;
+        private readonly IRoomRepository _roomRepo;
 
-    public IActionResult Index()
-    {
-        var students = _repo.GetAll();
-        return View(students);
-    }
-
-    [HttpGet]
-    public IActionResult Create()
-    {
-        var rooms = _repo.GetAllRooms();
-        ViewBag.Rooms = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(rooms, "RoomId", "RoomId");
-        
-        return View();
-    }
-
-    [HttpPost]
-    public IActionResult Create(someren_vilage.Models.Student student)
-    {
-        try
+        public StudentsController(IStudentRepository repo, IRoomRepository roomRepo)
         {
-            if (ModelState.IsValid)
-            {
-                _repo.Add(student);
-                return RedirectToAction("Index");
-            }
-        }
-        catch (SqlException ex)
-        {
-            if (ex.Number == 2627 || ex.Number == 2601)
-            {
-                ModelState.AddModelError("StudentNumber", "A student with this number already exists.");
-            }
-            else
-            {
-                ModelState.AddModelError("", "A database error occurred: " + ex.Message);
-            }
+            _repo = repo;
+            _roomRepo = roomRepo;
         }
 
-        return View(student);
-    }
+        public IActionResult Index()
+        {
+            List<Student> students = _repo.GetAll();
+            return View(students);
+        }
 
-    [HttpPost]
-    public IActionResult Delete(int id)
-    {
-        try
+        public IActionResult Create()
+        {
+            ViewBag.Rooms = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_roomRepo.GetAll(), "RoomId", "RoomId");
+            return View(new Student());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(Student student)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Rooms = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_roomRepo.GetAll(), "RoomId", "RoomId", student.RoomId);
+                return View(student);
+            }
+
+            _repo.Add(student);
+            return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Edit(int id)
+        {
+            Student? student = _repo.GetById(id);
+            if (student == null)
+                return NotFound();
+
+            ViewBag.Rooms = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_roomRepo.GetAll(), "RoomId", "RoomId", student.RoomId);
+            return View(student);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(Student student)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Rooms = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_roomRepo.GetAll(), "RoomId", "RoomId", student.RoomId);
+                return View(student);
+            }
+
+            _repo.Update(student);
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ActionName("Delete")]
+        public IActionResult DeleteConfirmed(int id)
         {
             _repo.Delete(id);
-            return RedirectToAction("Index");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error deleting student");
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
     }
-
-    [HttpGet]
-    public IActionResult Edit(int id)
-    {
-        var student = _repo.GetById(id);
-        if (student == null) return NotFound();
-
-        var rooms = _repo.GetAllRooms();
-        
-        ViewBag.Rooms = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(rooms, "RoomId", "RoomId", student.RoomId);
-        
-        return View(student);
-    }
-
-    [HttpPost]
-    public IActionResult Edit(someren_vilage.Models.Student student)
-    {
-        try 
-        {
-            if (ModelState.IsValid)
-            {
-                _repo.Update(student);
-                return RedirectToAction("Index");
-            }
-        }
-        catch (SqlException ex)
-        {
-            ModelState.AddModelError("", "Database error: " + ex.Message);
-        }
-        
-        ViewBag.Rooms = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_repo.GetAllRooms(), "RoomId", "RoomId", student.RoomId);
-    
-        return View(student);
-    }
-
 }

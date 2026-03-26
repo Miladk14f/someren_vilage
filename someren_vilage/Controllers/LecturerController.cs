@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using someren_vilage.Models;
-using someren_vilage.Repositorie;
+using someren_vilage.Repositorie.LecturerRepo;
+using someren_vilage.Repositorie.RoomRepo;
 
 namespace someren_vilage.Controllers
 {
