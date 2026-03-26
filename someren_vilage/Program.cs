@@ -4,6 +4,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<someren_vilage.Repositorie.IRoomRepository, someren_vilage.Repositorie.DbRoomRepository>();
 builder.Services.AddScoped<someren_vilage.Repositorie.IActivityRepository, someren_vilage.Repositorie.DbActivityRepository>();
 builder.Services.AddScoped<someren_vilage.Repositorie.IStudentRepository, someren_vilage.Repositorie.DbStudentRepository>();
+builder.Services.AddScoped<someren_vilage.Repositorie.ILecturerRepository, someren_vilage.Repositorie.DbLecturerRepository>();
+
 
 var app = builder.Build();
 
