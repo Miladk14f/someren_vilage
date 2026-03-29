@@ -149,8 +149,30 @@ namespace someren_vilage.Controllers
                 {
                     Activity = activity,
                     Participants = _participantRepo.GetParticipants(id),
+                    AllStudents = _participantRepo.GetAllStudents()
+                };
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        [HttpGet]
+        public IActionResult Supervisor(int id)
+        {
+            try
+            {
+                Activity? activity = _repo.GetById(id);
+                if (activity == null) return NotFound();
+
+                ViewModels.ActivitySupervisorsViewModel model = new ViewModels.ActivitySupervisorsViewModel
+                {
+                    Activity = activity,
                     Lecturers = _supervisorRepo.GetSupervisors(id),
-                    AllStudents = _participantRepo.GetAllStudents(),
                     AllLecturers = _supervisorRepo.GetAllLecturers()
                 };
 
@@ -202,12 +224,12 @@ namespace someren_vilage.Controllers
             try
             {
                 _supervisorRepo.AddSupervisor(activityId, lecturerId);
-                return RedirectToAction(nameof(Participent), new { id = activityId });
+                return RedirectToAction(nameof(Supervisor), new { id = activityId });
             }
             catch (Exception ex)
             {
                 TempData["Error"] = ex.Message;
-                return RedirectToAction(nameof(Participent), new { id = activityId });
+                return RedirectToAction(nameof(Supervisor), new { id = activityId });
             }
         }
 
@@ -218,12 +240,12 @@ namespace someren_vilage.Controllers
             try
             {
                 _supervisorRepo.RemoveSupervisor(activityId, lecturerId);
-                return RedirectToAction(nameof(Participent), new { id = activityId });
+                return RedirectToAction(nameof(Supervisor), new { id = activityId });
             }
             catch (Exception ex)
             {
                 TempData["Error"] = ex.Message;
-                return RedirectToAction(nameof(Participent), new { id = activityId });
+                return RedirectToAction(nameof(Supervisor), new { id = activityId });
             }
         }
     }

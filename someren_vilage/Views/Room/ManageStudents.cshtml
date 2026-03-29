@@ -36,7 +36,7 @@
                     <td>@student.StudentNumber</td>
                     <td>@student.FirstName @student.LastName</td>
                     <td>@student.Class</td>
-                    <td>
+                    <td class="text-nowrap">
                         <form asp-controller="Room" asp-action="RemoveStudent" method="post" style="display:inline">
                             <input type="hidden" name="roomId" value="@Model.Room.RoomId" />
                             <input type="hidden" name="studentNumber" value="@student.StudentNumber" />
@@ -101,7 +101,7 @@ else
                 <tr>
                     <td>@lecturer.LecturerId</td>
                     <td>@lecturer.FirstName @lecturer.LastName</td>
-                    <td>
+                    <td class="text-nowrap">
                         <form asp-controller="Room" asp-action="RemoveLecturer" method="post" style="display:inline">
                             <input type="hidden" name="roomId" value="@Model.Room.RoomId" />
                             <input type="hidden" name="lecturerId" value="@lecturer.LecturerId" />

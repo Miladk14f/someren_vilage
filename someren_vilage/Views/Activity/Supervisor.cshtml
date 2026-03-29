@@ -1,0 +1,62 @@
+@model someren_vilage.ViewModels.ActivitySupervisorsViewModel
+
+@{
+    ViewData["Title"] = "Supervisors";
+}
+
+<h2>Supervisors for @Model.Activity.Name</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<h4>Lecturers</h4>
+<table class="table">
+    <thead><tr><th>Id</th><th>Name</th><th></th></tr></thead>
+    <tbody>
+        @foreach (var l in Model.Lecturers)
+        {
+            <tr>
+                <td>@l.LecturerId</td>
+                <td>@l.FirstName @l.LastName</td>
+                <td class="text-nowrap">
+                    <form asp-controller="Activity" asp-action="RemoveLecturer" method="post" style="display:inline">
+                        <input type="hidden" name="activityId" value="@Model.Activity.ActivityId" />
+                        <input type="hidden" name="lecturerId" value="@l.LecturerId" />
+                        @Html.AntiForgeryToken()
+                        <button class="btn btn-sm btn-danger" type="submit" onclick="return confirm('Remove lecturer?')">Remove</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h5>Add lecturer</h5>
+<div class="row">
+    <div class="col-md-6">
+        <form asp-controller="Activity" asp-action="AddLecturer" method="post">
+            <input type="hidden" name="activityId" value="@Model.Activity.ActivityId" />
+            <div class="mb-3">
+                <label class="form-label">Select Lecturer</label>
+                <select name="lecturerId" class="form-control">
+                    <option value="">-- Select a Lecturer --</option>
+                    @foreach (var l in Model.AllLecturers)
+                    {
+                        var assigned = Model.Lecturers.Any(s => s.LecturerId == l.LecturerId);
+                        <option value="@l.LecturerId" disabled="@(assigned ? "disabled" : null)">
+                            @l.LecturerId - @l.FirstName @l.LastName@(assigned ? " (assigned)" : "")
+                        </option>
+                    }
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Add</button>
+            @Html.AntiForgeryToken()
+        </form>
+    </div>
+</div>

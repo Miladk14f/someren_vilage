@@ -44,7 +44,7 @@
                 <td>@item.VatPercentage%</td>
                 <td>@item.Stock</td>
                 <td>@(item.Alcoholic ? "Yes" : "No")</td>
-                <td>
+                <td class="text-nowrap">
                     <a asp-controller="Drink" asp-action="Edit" asp-route-id="@item.DrinkId" class="btn btn-sm btn-primary me-1">Edit</a>
 
                     <form asp-controller="Drink" asp-action="Delete" asp-route-id="@item.DrinkId" method="post" style="display:inline" onsubmit="return confirm('Delete this drink?');">

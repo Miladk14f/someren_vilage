@@ -81,37 +81,20 @@ namespace someren_vilage.Controllers
             }
         }
 
-        [HttpGet]
-        public ActionResult Delete(int? id)
-        {
-            try
-            {
-                if (id == null)
-                {
-                    return NotFound();
-                }
-                Lecturer? lecturer = _lecturerRepository.GetById((int)id);
-                return View(lecturer);
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = ex.Message;
-                return RedirectToAction("Index");
-            }
-        }
-
         [HttpPost]
-        public ActionResult Delete(Lecturer lecturer)
+        [ValidateAntiForgeryToken]
+        [ActionName("Delete")]
+        public ActionResult DeleteConfirmed(int id)
         {
             try
             {
-                _lecturerRepository.Delete(lecturer.LecturerId);
+                _lecturerRepository.Delete(id);
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
                 TempData["Error"] = ex.Message;
-                return View(lecturer);
+                return RedirectToAction("Index");
             }
         }
 

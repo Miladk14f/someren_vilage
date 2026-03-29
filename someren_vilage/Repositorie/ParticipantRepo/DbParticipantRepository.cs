@@ -81,7 +81,7 @@ namespace someren_vilage.Repositorie.ParticipantRepo
                 LastName = (string)reader["last_name"],
                 PhoneNumber = (string)reader["phone_number"],
                 Class = (string)reader["class"],
-                RoomId = (int)reader["room_id"]
+                RoomId = reader["room_id"] as int?
             };
             return student;
         }

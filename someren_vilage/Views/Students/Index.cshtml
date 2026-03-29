@@ -59,7 +59,7 @@
                 <td>@item.PhoneNumber</td>
                 <td>@item.Class</td>
                 <td>@item.RoomId</td>
-                <td>
+                <td class="text-nowrap">
                     <a asp-controller="Students" asp-action="Edit" asp-route-id="@item.StudentNumber" class="btn btn-sm btn-primary me-1">Edit</a>
 
                     <form asp-controller="Students" asp-action="Delete" asp-route-id="@item.StudentNumber" method="post" style="display:inline" onsubmit="return confirm('Delete this student?');">
