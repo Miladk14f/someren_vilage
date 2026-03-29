@@ -1,22 +1,16 @@
 using Microsoft.AspNetCore.Mvc;
 using someren_vilage.Models;
 using someren_vilage.Repositorie.ActivityRepo;
-using someren_vilage.Repositorie.ParticipantRepo;
-using someren_vilage.Repositorie.SupervisorRepo;
 
 namespace someren_vilage.Controllers
 {
     public class ActivityController : Controller
     {
         private readonly IActivityRepository _repo;
-        private readonly IParticipantRepository _participantRepo;
-        private readonly ISupervisorRepository _supervisorRepo;
 
-        public ActivityController(IActivityRepository repo, IParticipantRepository participantRepo, ISupervisorRepository supervisorRepo)
+        public ActivityController(IActivityRepository repo)
         {
             _repo = repo;
-            _participantRepo = participantRepo;
-            _supervisorRepo = supervisorRepo;
         }
 
         [HttpGet]
@@ -137,116 +131,5 @@ namespace someren_vilage.Controllers
             }
         }
 
-        [HttpGet]
-        public IActionResult Participent(int id)
-        {
-            try
-            {
-                Activity? activity = _repo.GetById(id);
-                if (activity == null) return NotFound();
-
-                ViewModels.ActivityParticipantsViewModel model = new ViewModels.ActivityParticipantsViewModel
-                {
-                    Activity = activity,
-                    Participants = _participantRepo.GetParticipants(id),
-                    AllStudents = _participantRepo.GetAllStudents()
-                };
-
-                return View(model);
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = ex.Message;
-                return RedirectToAction(nameof(Index));
             }
         }
-
-        [HttpGet]
-        public IActionResult Supervisor(int id)
-        {
-            try
-            {
-                Activity? activity = _repo.GetById(id);
-                if (activity == null) return NotFound();
-
-                ViewModels.ActivitySupervisorsViewModel model = new ViewModels.ActivitySupervisorsViewModel
-                {
-                    Activity = activity,
-                    Lecturers = _supervisorRepo.GetSupervisors(id),
-                    AllLecturers = _supervisorRepo.GetAllLecturers()
-                };
-
-                return View(model);
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = ex.Message;
-                return RedirectToAction(nameof(Index));
-            }
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult AddParticipant(int activityId, int studentNumber)
-        {
-            try
-            {
-                _participantRepo.AddParticipant(activityId, studentNumber);
-                return RedirectToAction(nameof(Participent), new { id = activityId });
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = ex.Message;
-                return RedirectToAction(nameof(Participent), new { id = activityId });
-            }
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult RemoveParticipant(int activityId, int studentNumber)
-        {
-            try
-            {
-                _participantRepo.RemoveParticipant(activityId, studentNumber);
-                return RedirectToAction(nameof(Participent), new { id = activityId });
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = ex.Message;
-                return RedirectToAction(nameof(Participent), new { id = activityId });
-            }
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult AddLecturer(int activityId, int lecturerId)
-        {
-            try
-            {
-                _supervisorRepo.AddSupervisor(activityId, lecturerId);
-                return RedirectToAction(nameof(Supervisor), new { id = activityId });
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = ex.Message;
-                return RedirectToAction(nameof(Supervisor), new { id = activityId });
-            }
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult RemoveLecturer(int activityId, int lecturerId)
-        {
-            try
-            {
-                _supervisorRepo.RemoveSupervisor(activityId, lecturerId);
-                return RedirectToAction(nameof(Supervisor), new { id = activityId });
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = ex.Message;
-                return RedirectToAction(nameof(Supervisor), new { id = activityId });
-            }
-        }
-    }
-}
