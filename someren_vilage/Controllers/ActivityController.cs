@@ -19,6 +19,7 @@ namespace someren_vilage.Controllers
             _supervisorRepo = supervisorRepo;
         }
 
+        [HttpGet]
         public IActionResult Index(string sort)
         {
             try
@@ -47,6 +48,7 @@ namespace someren_vilage.Controllers
             }
         }
 
+        [HttpGet]
         public IActionResult Create()
         {
             try
@@ -81,6 +83,7 @@ namespace someren_vilage.Controllers
             }
         }
 
+        [HttpGet]
         public IActionResult Edit(int id)
         {
             try
@@ -134,6 +137,7 @@ namespace someren_vilage.Controllers
             }
         }
 
+        [HttpGet]
         public IActionResult Participent(int id)
         {
             try

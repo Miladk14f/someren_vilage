@@ -3,12 +3,29 @@
 
 }
 
-<div class="text-center">
-    <h1 class="display-4">Lecturers</h1>
-    <p>all lecturers are showen here @Model.Count</p>
+<div class="d-flex align-items-center mb-3">
+    <h2 class="m-0">All Lecturer</h2>
 </div>
 
-<a asp-action="Create" class="btn btn-success me-2" >New lecturer</a>
+<div class="d-flex align-items-center mb-3">
+    <a asp-controller="Lecturer" asp-action="Create" class="btn btn-success me-2">New lecturer</a>
+</div>
+
+<form method="get" class="mb-3">
+    <label for="sortSelect" class="form-label">Sort by:</label>
+    <select id="sortSelect" name="sort" class="form-select w-auto d-inline-block me-2" onchange="this.form.submit()">
+        <option value="" selected="@(ViewData["CurrentSort"] == null ? "selected" : null)">Last name</option>
+        <option value="lastname_desc" selected="@(ViewData["CurrentSort"] as string == "lastname_desc" ? "selected" : null)">Last name desc</option>
+        <option value="firstname" selected="@(ViewData["CurrentSort"] as string == "firstname" ? "selected" : null)">First name</option>
+        <option value="firstname_desc" selected="@(ViewData["CurrentSort"] as string == "firstname_desc" ? "selected" : null)">First name desc</option>
+        <option value="phone" selected="@(ViewData["CurrentSort"] as string == "phone" ? "selected" : null)">Phone number</option>
+        <option value="phone_desc" selected="@(ViewData["CurrentSort"] as string == "phone_desc" ? "selected" : null)">Phone number desc</option>
+        <option value="age" selected="@(ViewData["CurrentSort"] as string == "age" ? "selected" : null)">Age</option>
+        <option value="age_desc" selected="@(ViewData["CurrentSort"] as string == "age_desc" ? "selected" : null)">Age desc</option>
+        <option value="room" selected="@(ViewData["CurrentSort"] as string == "room" ? "selected" : null)">Room</option>
+        <option value="room_desc" selected="@(ViewData["CurrentSort"] as string == "room_desc" ? "selected" : null)">Room desc</option>
+    </select>
+</form>
 
 <table class="table table-striped">
     <thead>

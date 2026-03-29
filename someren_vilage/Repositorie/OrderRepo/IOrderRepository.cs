@@ -8,7 +8,5 @@ namespace someren_vilage.Repositorie.OrderRepo
         List<Order> GetOrders(int studentNumber);
         void AddOrder(int studentNumber, int drinkId, int quantity);
         void RemoveOrder(int studentNumber, int drinkId);
-        List<Student> GetAllStudents();
-        List<Drink> GetAllDrinks();
     }
 }

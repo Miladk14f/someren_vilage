@@ -1,0 +1,151 @@
+@model someren_vilage.ViewModels.RoomStudentsViewModel
+
+@{
+    ViewData["Title"] = "Manage Dormitory Students";
+}
+
+<h2>Manage Students for Room @Model.Room.RoomId</h2>
+<p><strong>Floor:</strong> @Model.Room.Floor | <strong>Type:</strong> @Model.Room.RoomType | <strong>Capacity:</strong> @Model.Room.Capacity | <strong>Building:</strong> @Model.Room.BuildingName</p>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Error:</strong> @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<hr />
+
+<h4>Students in this Room</h4>
+@if (Model.AssignedStudents.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Student Number</th>
+                <th>Name</th>
+                <th>Class</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var student in Model.AssignedStudents)
+            {
+                <tr>
+                    <td>@student.StudentNumber</td>
+                    <td>@student.FirstName @student.LastName</td>
+                    <td>@student.Class</td>
+                    <td>
+                        <form asp-controller="Room" asp-action="RemoveStudent" method="post" style="display:inline">
+                            <input type="hidden" name="roomId" value="@Model.Room.RoomId" />
+                            <input type="hidden" name="studentNumber" value="@student.StudentNumber" />
+                            @Html.AntiForgeryToken()
+                            <button class="btn btn-sm btn-danger" type="submit" onclick="return confirm('Remove this student from the room?')">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-info">No students assigned to this room.</div>
+}
+
+<h5>Add Student to Room</h5>
+@if (Model.UnassignedStudents.Any())
+{
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-controller="Room" asp-action="AddStudent" method="post">
+                <input type="hidden" name="roomId" value="@Model.Room.RoomId" />
+                <div class="mb-3">
+                    <label class="form-label">Select Student</label>
+                    <select name="studentNumber" class="form-control" required>
+                        <option value="">-- Select a Student --</option>
+                        @foreach (var student in Model.UnassignedStudents)
+                        {
+                            <option value="@student.StudentNumber">@student.StudentNumber - @student.FirstName @student.LastName (@student.Class)</option>
+                        }
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Add to Room</button>
+                @Html.AntiForgeryToken()
+            </form>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">No unassigned students available.</div>
+}
+
+<hr />
+
+<h4>Lecturers in this Room</h4>
+@if (Model.AssignedLecturers.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Lecturer ID</th>
+                <th>Name</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var lecturer in Model.AssignedLecturers)
+            {
+                <tr>
+                    <td>@lecturer.LecturerId</td>
+                    <td>@lecturer.FirstName @lecturer.LastName</td>
+                    <td>
+                        <form asp-controller="Room" asp-action="RemoveLecturer" method="post" style="display:inline">
+                            <input type="hidden" name="roomId" value="@Model.Room.RoomId" />
+                            <input type="hidden" name="lecturerId" value="@lecturer.LecturerId" />
+                            @Html.AntiForgeryToken()
+                            <button class="btn btn-sm btn-danger" type="submit" onclick="return confirm('Remove this lecturer from the room?')">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-info">No lecturers assigned to this room.</div>
+}
+
+<h5>Add Lecturer to Room</h5>
+@if (Model.UnassignedLecturers.Any())
+{
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-controller="Room" asp-action="AddLecturer" method="post">
+                <input type="hidden" name="roomId" value="@Model.Room.RoomId" />
+                <div class="mb-3">
+                    <label class="form-label">Select Lecturer</label>
+                    <select name="lecturerId" class="form-control" required>
+                        <option value="">-- Select a Lecturer --</option>
+                        @foreach (var lecturer in Model.UnassignedLecturers)
+                        {
+                            <option value="@lecturer.LecturerId">@lecturer.LecturerId - @lecturer.FirstName @lecturer.LastName</option>
+                        }
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Add to Room</button>
+                @Html.AntiForgeryToken()
+            </form>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">No unassigned lecturers available.</div>
+}
+
+<hr />
+<a asp-controller="Room" asp-action="Index" class="btn btn-secondary">Back to Rooms</a>

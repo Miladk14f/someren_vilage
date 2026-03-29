@@ -17,7 +17,7 @@ namespace someren_vilage.Models
 
         public int Age { get; set; }
 
-        public int RoomId { get; set; }
+        public int? RoomId { get; set; }
         //public Room Room { get; set; }
 
         //public Lecturer() 

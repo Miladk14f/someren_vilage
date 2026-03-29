@@ -13,62 +13,105 @@ namespace someren_vilage.Controllers
             _repo = repo;
         }
 
+        [HttpGet]
         public IActionResult Index(string sort)
         {
-            List<Drink> drinks = _repo.GetAll();
-
-            drinks = sort switch
+            try
             {
-                "name" => drinks.OrderBy(d => d.Name).ToList(),
-                "name_desc" => drinks.OrderByDescending(d => d.Name).ToList(),
-                "price" => drinks.OrderBy(d => d.Price).ToList(),
-                "price_desc" => drinks.OrderByDescending(d => d.Price).ToList(),
-                "stock" => drinks.OrderBy(d => d.Stock).ToList(),
-                "stock_desc" => drinks.OrderByDescending(d => d.Stock).ToList(),
-                _ => drinks.OrderBy(d => d.Name).ToList(),
-            };
+                List<Drink> drinks = _repo.GetAll();
 
-            ViewData["CurrentSort"] = sort;
+                drinks = sort switch
+                {
+                    "name" => drinks.OrderBy(d => d.Name).ToList(),
+                    "name_desc" => drinks.OrderByDescending(d => d.Name).ToList(),
+                    "price" => drinks.OrderBy(d => d.Price).ToList(),
+                    "price_desc" => drinks.OrderByDescending(d => d.Price).ToList(),
+                    "stock" => drinks.OrderBy(d => d.Stock).ToList(),
+                    "stock_desc" => drinks.OrderByDescending(d => d.Stock).ToList(),
+                    _ => drinks.OrderBy(d => d.Name).ToList(),
+                };
 
-            return View(drinks);
+                ViewData["CurrentSort"] = sort;
+
+                return View(drinks);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return View(new List<Drink>());
+            }
         }
 
+        [HttpGet]
         public IActionResult Create()
         {
-            return View(new Drink());
+            try
+            {
+                return View(new Drink());
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Drink drink)
         {
-            if (!ModelState.IsValid)
+            try
             {
+                if (!ModelState.IsValid)
+                {
+                    return View(drink);
+                }
+
+                _repo.Add(drink);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
                 return View(drink);
             }
-
-            _repo.Add(drink);
-            return RedirectToAction(nameof(Index));
         }
 
+        [HttpGet]
         public IActionResult Edit(int id)
         {
-            Drink? drink = _repo.GetById(id);
-            if (drink == null)
-                return NotFound();
+            try
+            {
+                Drink? drink = _repo.GetById(id);
+                if (drink == null)
+                    return NotFound();
 
-            return View(drink);
+                return View(drink);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Drink drink)
         {
-            if (!ModelState.IsValid)
-                return View(drink);
+            try
+            {
+                if (!ModelState.IsValid)
+                    return View(drink);
 
-            _repo.Update(drink);
-            return RedirectToAction(nameof(Index));
+                _repo.Update(drink);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return View(drink);
+            }
         }
 
         [HttpPost]
@@ -76,8 +119,16 @@ namespace someren_vilage.Controllers
         [ActionName("Delete")]
         public IActionResult DeleteConfirmed(int id)
         {
-            _repo.Delete(id);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                _repo.Delete(id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(Index));
+            }
         }
     }
 }
