@@ -12,7 +12,6 @@ namespace someren_vilage.Repositorie.LecturerRepo
         private readonly String? _connectionString;
         public DbLecturerRepository(IConfiguration configuration)
         {
-            // get (database) connection string from appsettings
             _connectionString = configuration.GetConnectionString("SomerenDb");
         }
 
@@ -26,9 +25,8 @@ namespace someren_vilage.Repositorie.LecturerRepo
             int lecturerAge = Convert.ToInt32(reader["age"]);
             int? lecturerRoomId = reader["room_id"] as int?;
 
-            //return new Lecturer(id, lecturerFirstName, lecturerLastName, lecturerPhoneNumber, lecturerAge, lecturerRoomId);
-
-            return new Lecturer {
+            return new Lecturer
+            {
                 LecturerId = id,
                 FirstName = lecturerFirstName,
                 LastName = lecturerLastName,
@@ -44,7 +42,7 @@ namespace someren_vilage.Repositorie.LecturerRepo
             {
                 List<Lecturer> lecturers = new List<Lecturer>();
 
-                using(SqlConnection connection = new SqlConnection(_connectionString))
+                using (SqlConnection connection = new SqlConnection(_connectionString))
                 {
                     string query = $"SELECT {studentColumnNames} FROM dbo.Lecturer ORDER BY last_name ASC";
                     SqlCommand command = new SqlCommand(query, connection);
@@ -52,7 +50,6 @@ namespace someren_vilage.Repositorie.LecturerRepo
                     command.Connection.Open();
                     SqlDataReader reader = command.ExecuteReader();
 
-                    // while loop to create object using LecturerReader
                     while (reader.Read())
                     {
                         Lecturer lecturer = LecturerReader(reader);
@@ -72,42 +69,40 @@ namespace someren_vilage.Repositorie.LecturerRepo
         {
             try
             {
-                //throw new NotImplementedException();
 
-                    using (SqlConnection connection = new SqlConnection(_connectionString))
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    string query = "INSERT INTO dbo.Lecturer (first_name, last_name, phone_number, age, room_id) VALUES (@FirstName, @LastName, @PhoneNumber, @Age, @RoomId)";
+
+                    SqlCommand command = new SqlCommand(query, connection);
+
+                    command.Parameters.AddWithValue("@FirstName", lecturer.FirstName);
+                    command.Parameters.AddWithValue("@LastName", lecturer.LastName);
+                    command.Parameters.AddWithValue("@PhoneNumber", lecturer.PhoneNumber);
+                    command.Parameters.AddWithValue("@Age", lecturer.Age);
+                    command.Parameters.Add(new SqlParameter("@RoomId", SqlDbType.Int)
                     {
-                        string query = "INSERT INTO dbo.Lecturer (first_name, last_name, phone_number, age, room_id) VALUES (@FirstName, @LastName, @PhoneNumber, @Age, @RoomId)";
+                        Value = (object?)lecturer.RoomId ?? DBNull.Value
+                    });
 
-                        SqlCommand command = new SqlCommand(query, connection);
-
-                        command.Parameters.AddWithValue("@FirstName", lecturer.FirstName);
-                        command.Parameters.AddWithValue("@LastName", lecturer.LastName);
-                        command.Parameters.AddWithValue("@PhoneNumber", lecturer.PhoneNumber);
-                        command.Parameters.AddWithValue("@Age", lecturer.Age);
-                        command.Parameters.Add(new SqlParameter("@RoomId", SqlDbType.Int)
-                        {
-                            Value = (object?)lecturer.RoomId ?? DBNull.Value
-                        });
-
-                        command.Connection.Open();
-                        int numberOfRowsAffected = command.ExecuteNonQuery();
-                        if (numberOfRowsAffected != 1)
-                        {
-                            throw new Exception("Adding lecturer failed.");
-                        }
+                    command.Connection.Open();
+                    int numberOfRowsAffected = command.ExecuteNonQuery();
+                    if (numberOfRowsAffected != 1)
+                    {
+                        throw new Exception("Adding lecturer failed.");
                     }
+                }
             }
             catch (Exception ex)
             {
                 throw new Exception($"Error adding lecturer. {ex.Message}", ex);
             }
-         }
+        }
 
         public void Delete(int lecturerId)
         {
             try
             {
-                //throw new NotImplementedException();
                 using (SqlConnection connection = new SqlConnection(_connectionString))
                 {
                     string query = $"DELETE FROM dbo.Lecturer WHERE lecturer_id = @lecturerId";
@@ -117,7 +112,6 @@ namespace someren_vilage.Repositorie.LecturerRepo
 
                     command.Connection.Open();
 
-                    // checks
                     int numberOfRowsAffected = command.ExecuteNonQuery();
                     if (numberOfRowsAffected <= 0)
                     {
@@ -135,8 +129,7 @@ namespace someren_vilage.Repositorie.LecturerRepo
         {
             try
             {
-                //throw new NotImplementedException();
-                using(SqlConnection connection = new SqlConnection(_connectionString))
+                using (SqlConnection connection = new SqlConnection(_connectionString))
                 {
                     string query = $"SELECT {studentColumnNames} FROM dbo.Lecturer WHERE lecturer_id = @lecturerId";
                     SqlCommand command = new SqlCommand(query, connection);
@@ -164,7 +157,6 @@ namespace someren_vilage.Repositorie.LecturerRepo
         {
             try
             {
-                //throw new NotImplementedException();
                 using (SqlConnection connection = new SqlConnection(_connectionString))
                 {
                     string query = $"UPDATE dbo.Lecturer " + "SET first_name=@FirstName, last_name=@LastName, phone_number=@PhoneNumber, age=@Age, room_id=@RoomId WHERE lecturer_id = @lecturerId";
@@ -175,10 +167,10 @@ namespace someren_vilage.Repositorie.LecturerRepo
                     command.Parameters.AddWithValue("@LastName", lecturer.LastName);
                     command.Parameters.AddWithValue("@PhoneNumber", lecturer.PhoneNumber);
                     command.Parameters.AddWithValue("@Age", lecturer.Age);
-                    command.Parameters.Add(new SqlParameter("@roomId", SqlDbType.Int) 
-{ 
-    Value = (object?)lecturer.RoomId ?? DBNull.Value 
-});
+                    command.Parameters.Add(new SqlParameter("@roomId", SqlDbType.Int)
+                    {
+                        Value = (object?)lecturer.RoomId ?? DBNull.Value
+                    });
 
 
                     command.Connection.Open();
