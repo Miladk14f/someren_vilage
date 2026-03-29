@@ -1,0 +1,55 @@
+@model someren_vilage.Models.Student
+
+@{
+    ViewData["Title"] = "Add New Student";
+}
+
+<h2>Add New Student</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="mb-3">
+                <label asp-for="FirstName" class="form-label">First Name</label>
+                <input asp-for="FirstName" class="form-control"/>
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="StudentNumber" class="form-label">Student Number</label>
+                <input asp-for="StudentNumber" class="form-control" type="number"/>
+                <span asp-validation-for="StudentNumber" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="LastName" class="form-label">Last Name</label>
+                <input asp-for="LastName" class="form-control"/>
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="PhoneNumber" class="form-label">Phone Number</label>
+                <input asp-for="PhoneNumber" class="form-control"/>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Class" class="form-label">Class</label>
+                <input asp-for="Class" class="form-control"/>
+                <span asp-validation-for="Class" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="RoomId" class="form-label">Room ID</label>
+                <label asp-for="RoomId" class="form-label">Select Room</label>
+                <select asp-for="RoomId" class="form-control" asp-items="ViewBag.Rooms">
+                    <option value="">-- Select a Room --</option>
+                </select>
+                <span asp-validation-for="RoomId" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Student</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>

@@ -5,9 +5,30 @@
 }
 
 <div class="d-flex align-items-center mb-3">
-    <a asp-controller="Students" asp-action="Create" class="btn btn-success me-2">New student</a>
-    <h2 class="m-0">Students</h2>
+    <h2 class="m-0">All Students</h2>
 </div>
+
+<div class="d-flex align-items-center mb-3">
+    <a asp-controller="Students" asp-action="Create" class="btn btn-success me-2">New student</a>
+</div>
+
+<form method="get" class="mb-3">
+    <label for="sortSelect" class="form-label">Sort by:</label>
+    <select id="sortSelect" name="sort" class="form-select w-auto d-inline-block me-2" onchange="this.form.submit()">
+        <option value="" selected="@(ViewData["CurrentSort"] == null ? "selected" : null)">Number</option>
+        <option value="number_desc" selected="@(ViewData["CurrentSort"] as string == "number_desc" ? "selected" : null)">Number desc</option>
+        <option value="firstname" selected="@(ViewData["CurrentSort"] as string == "firstname" ? "selected" : null)">First name</option>
+        <option value="firstname_desc" selected="@(ViewData["CurrentSort"] as string == "firstname_desc" ? "selected" : null)">First name desc</option>
+        <option value="lastname" selected="@(ViewData["CurrentSort"] as string == "lastname" ? "selected" : null)">Last name</option>
+        <option value="lastname_desc" selected="@(ViewData["CurrentSort"] as string == "lastname_desc" ? "selected" : null)">Last name desc</option>
+        <option value="phone" selected="@(ViewData["CurrentSort"] as string == "phone" ? "selected" : null)">Phone number</option>
+        <option value="phone_desc" selected="@(ViewData["CurrentSort"] as string == "phone_desc" ? "selected" : null)">Phone number desc</option>
+        <option value="class" selected="@(ViewData["CurrentSort"] as string == "class" ? "selected" : null)">Class</option>
+        <option value="class_desc" selected="@(ViewData["CurrentSort"] as string == "class_desc" ? "selected" : null)">Class desc</option>
+        <option value="room" selected="@(ViewData["CurrentSort"] as string == "room" ? "selected" : null)">Room</option>
+        <option value="room_desc" selected="@(ViewData["CurrentSort"] as string == "room_desc" ? "selected" : null)">Room desc</option>
+    </select>
+</form>
 
 @{
     var hasAny = false;
@@ -25,6 +46,7 @@
     </tr>
     </thead>
     <tbody>
+
     @if (Model != null)
     {
         foreach (var item in Model)
@@ -37,7 +59,7 @@
                 <td>@item.PhoneNumber</td>
                 <td>@item.Class</td>
                 <td>@item.RoomId</td>
-                <td>
+                <td class="text-nowrap">
                     <a asp-controller="Students" asp-action="Edit" asp-route-id="@item.StudentNumber" class="btn btn-sm btn-primary me-1">Edit</a>
 
                     <form asp-controller="Students" asp-action="Delete" asp-route-id="@item.StudentNumber" method="post" style="display:inline" onsubmit="return confirm('Delete this student?');">

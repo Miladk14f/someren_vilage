@@ -15,10 +15,8 @@ namespace someren_vilage.Models
 
         public string PhoneNumber { get; set; }
 
-        public byte? Age { get; set; }
+        public int Age { get; set; }
 
-        public int RoomId { get; set; }
-        public Room Room { get; set; }
-
+        public int? RoomId { get; set; }
     }
 }

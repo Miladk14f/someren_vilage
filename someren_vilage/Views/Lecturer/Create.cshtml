@@ -1,0 +1,45 @@
+﻿@model someren_vilage.Models.Lecturer;
+
+
+@{
+}
+
+<h4>Create a Lecturer</h4>
+
+<form action="/Lecturer/Create" method="POST">
+    <input hidden type="number" name="LecturerId" value="@Model?.LecturerId" />
+
+    <div class="form-group py-2">
+        <label for="firstName">First name:</label>
+        <input type="text" name="FirstName" id="FirstName" class="form-control" required value="@Model?.FirstName" />
+    </div>
+
+    <div class="form-group py-2">
+        <label for="lastName">Last name:</label>
+        <input type="text" name="LastName" id="LastName" class="form-control" required value="@Model?.LastName" />
+    </div>
+
+    <div class="form-group py-2">
+        <label for="phoneNumber">Phone number</label>
+        <input type="text" name="PhoneNumber" id="PhoneNumber" class="form-control" required value="@Model?.PhoneNumber" />
+    </div>
+
+    <div class="form-group py-2">
+        <label for="Age">Age</label>
+        <input type="number" name="Age" id="Age" class="form-control" required value="@Model?.Age" />
+    </div>
+
+    <div class="form-group py-2">
+        <label asp-for="RoomId" class="form-label">Room</label>
+        <select asp-for="RoomId" class="form-control" asp-items="ViewBag.Rooms">
+            <option value="">-- Select a Room --</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a asp-action="Index" class="btn btn-secondary ms-2">Back</a>
+</form>
+
+
+
+

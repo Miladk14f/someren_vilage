@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using someren_vilage.Models;
 
-namespace someren_vilage.Repositorie
+namespace someren_vilage.Repositorie.RoomRepo
 {
     public interface IRoomRepository
     {

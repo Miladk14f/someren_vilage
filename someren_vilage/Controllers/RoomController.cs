@@ -1,40 +1,43 @@
 using Microsoft.AspNetCore.Mvc;
 using someren_vilage.Models;
-using someren_vilage.Repositorie;
-using Microsoft.Extensions.Logging;
-using System.Diagnostics;
+using someren_vilage.Repositorie.LecturerRepo;
+using someren_vilage.Repositorie.RoomRepo;
+using someren_vilage.Repositorie.StudentRepo;
 
 namespace someren_vilage.Controllers
 {
     public class RoomController : Controller
     {
         private readonly IRoomRepository _repo;
-        private readonly ILogger<RoomController> _logger;
+        private readonly IStudentRepository _studentRepo;
+        private readonly ILecturerRepository _lecturerRepo;
 
-        public RoomController(IRoomRepository repo, ILogger<RoomController> logger)
+        public RoomController(IRoomRepository repo, IStudentRepository studentRepo, ILecturerRepository lecturerRepo)
         {
             _repo = repo;
-            _logger = logger;
+            _studentRepo = studentRepo;
+            _lecturerRepo = lecturerRepo;
         }
 
+        [HttpGet]
         public IActionResult Index(string sort)
         {
             try
             {
-                var rooms = _repo.GetAll() ?? Enumerable.Empty<Room>();
+                List<Room> rooms = _repo.GetAll();
 
                 rooms = sort switch
                 {
-                    "floor" => rooms.OrderBy(r => r.Floor),
-                    "floor_desc" => rooms.OrderByDescending(r => r.Floor),
-                    "type" => rooms.OrderBy(r => r.RoomType),
-                    "type_desc" => rooms.OrderByDescending(r => r.RoomType),
-                    "capacity" => rooms.OrderBy(r => r.Capacity),
-                    "capacity_desc" => rooms.OrderByDescending(r => r.Capacity),
-                    "building" => rooms.OrderBy(r => r.BuildingName),
-                    "building_desc" => rooms.OrderByDescending(r => r.BuildingName),
-                    "id_desc" => rooms.OrderByDescending(r => r.RoomId),
-                    _ => rooms.OrderBy(r => r.RoomId),
+                    "floor" => rooms.OrderBy(r => r.Floor).ToList(),
+                    "floor_desc" => rooms.OrderByDescending(r => r.Floor).ToList(),
+                    "type" => rooms.OrderBy(r => r.RoomType).ToList(),
+                    "type_desc" => rooms.OrderByDescending(r => r.RoomType).ToList(),
+                    "capacity" => rooms.OrderBy(r => r.Capacity).ToList(),
+                    "capacity_desc" => rooms.OrderByDescending(r => r.Capacity).ToList(),
+                    "building" => rooms.OrderBy(r => r.BuildingName).ToList(),
+                    "building_desc" => rooms.OrderByDescending(r => r.BuildingName).ToList(),
+                    "id_desc" => rooms.OrderByDescending(r => r.RoomId).ToList(),
+                    _ => rooms.OrderBy(r => r.RoomId).ToList(),
                 };
 
                 ViewData["CurrentSort"] = sort;
@@ -43,11 +46,12 @@ namespace someren_vilage.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error loading room list");
-                return StatusCode(500, "Unable to load rooms.");
+                TempData["Error"] = ex.Message;
+                return View(new List<Room>());
             }
         }
 
+        [HttpGet]
         public IActionResult Create()
         {
             try
@@ -56,8 +60,8 @@ namespace someren_vilage.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error displaying create room page");
-                return StatusCode(500, "Unable to display create page.");
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(Index));
             }
         }
 
@@ -65,40 +69,38 @@ namespace someren_vilage.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(Room room)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(room);
-            }
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    return View(room);
+                }
+
                 _repo.Add(room);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error creating room");
-                ModelState.AddModelError("", "Unable to create room. " + ex.Message);
+                TempData["Error"] = ex.Message;
                 return View(room);
             }
         }
 
+        [HttpGet]
         public IActionResult Edit(int id)
         {
             try
             {
-                var room = _repo.GetById(id);
+                Room? room = _repo.GetById(id);
                 if (room == null)
                     return NotFound();
-
-                _logger.LogDebug("Edit GET room {Id}: Floor={Floor}, Type={Type}, Capacity={Capacity}",
-                    room.RoomId, room.Floor, room.RoomType, room.Capacity);
 
                 return View(room);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error loading room for edit id {Id}", id);
-                return StatusCode(500, "Unable to load room for edit.");
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(Index));
             }
         }
 
@@ -106,47 +108,18 @@ namespace someren_vilage.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Room room)
         {
-            if (!ModelState.IsValid)
-                return View(room);
-
-            if (room.RoomId <= 0)
-            {
-                ModelState.AddModelError("", "Invalid room id.");
-                return View(room);
-            }
-
             try
             {
+                if (!ModelState.IsValid)
+                    return View(room);
+
                 _repo.Update(room);
                 return RedirectToAction(nameof(Index));
             }
-            catch (InvalidOperationException ex)
-            {
-                _logger.LogWarning(ex, "Update failed for room id {RoomId}", room.RoomId);
-                return NotFound();
-            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unexpected error updating room id {RoomId}", room.RoomId);
-                ModelState.AddModelError("", "Unable to update room. " + ex.Message);
+                TempData["Error"] = ex.Message;
                 return View(room);
-            }
-        }
-
-        public IActionResult Delete(int id)
-        {
-            try
-            {
-                var room = _repo.GetById(id);
-                if (room == null)
-                    return NotFound();
-
-                return View(room);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error loading room for delete id {Id}", id);
-                return StatusCode(500, "Unable to load room for delete.");
             }
         }
 
@@ -162,15 +135,135 @@ namespace someren_vilage.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error deleting room id {Id}", id);
-                return StatusCode(500, "Unable to delete room.");
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(Index));
             }
         }
-[HttpPost]  
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+
+        [HttpGet]
+        public IActionResult ManageStudents(int id)
         {
-            return View(new ErrorViewModel { RequestId = System.Diagnostics.Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            try
+            {
+                Room? room = _repo.GetById(id);
+                if (room == null)
+                    return NotFound();
+
+                List<Student> allStudents = _studentRepo.GetAll();
+                List<Lecturer> allLecturers = _lecturerRepo.GetAll();
+
+                ViewModels.RoomStudentsViewModel model = new ViewModels.RoomStudentsViewModel
+                {
+                    Room = room,
+                    AssignedStudents = allStudents.Where(s => s.RoomId == id).ToList(),
+                    UnassignedStudents = allStudents.Where(s => s.RoomId == null || s.RoomId == 0).ToList(),
+                    AssignedLecturers = allLecturers.Where(l => l.RoomId == id).ToList(),
+                    UnassignedLecturers = allLecturers.Where(l => l.RoomId == null || l.RoomId == 0).ToList()
+                };
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddStudent(int roomId, int studentNumber)
+        {
+            try
+            {
+                if (studentNumber == 0)
+                {
+                    TempData["Error"] = "Please select a student before adding.";
+                    return RedirectToAction(nameof(ManageStudents), new { id = roomId });
+                }
+
+                Student? student = _studentRepo.GetById(studentNumber);
+                if (student == null)
+                    return NotFound();
+
+                student.RoomId = roomId;
+                _studentRepo.Update(student);
+                return RedirectToAction(nameof(ManageStudents), new { id = roomId });
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(ManageStudents), new { id = roomId });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult RemoveStudent(int roomId, int studentNumber)
+        {
+            try
+            {
+                Student? student = _studentRepo.GetById(studentNumber);
+                if (student == null)
+                    return NotFound();
+
+                student.RoomId = null;
+                _studentRepo.Update(student);
+                return RedirectToAction(nameof(ManageStudents), new { id = roomId });
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(ManageStudents), new { id = roomId });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddLecturer(int roomId, int lecturerId)
+        {
+            try
+            {
+                if (lecturerId == 0)
+                {
+                    TempData["Error"] = "Please select a lecturer before adding.";
+                    return RedirectToAction(nameof(ManageStudents), new { id = roomId });
+                }
+
+                Lecturer? lecturer = _lecturerRepo.GetById(lecturerId);
+                if (lecturer == null)
+                    return NotFound();
+
+                lecturer.RoomId = roomId;
+                _lecturerRepo.Update(lecturer);
+                return RedirectToAction(nameof(ManageStudents), new { id = roomId });
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(ManageStudents), new { id = roomId });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult RemoveLecturer(int roomId, int lecturerId)
+        {
+            try
+            {
+                Lecturer? lecturer = _lecturerRepo.GetById(lecturerId);
+                if (lecturer == null)
+                    return NotFound();
+
+                lecturer.RoomId = null;
+                _lecturerRepo.Update(lecturer);
+                return RedirectToAction(nameof(ManageStudents), new { id = roomId });
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(ManageStudents), new { id = roomId });
+            }
         }
     }
 }

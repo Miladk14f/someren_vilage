@@ -1,9 +1,24 @@
+using someren_vilage.Repositorie.ActivityRepo;
+using someren_vilage.Repositorie.DrinkRepo;
+using someren_vilage.Repositorie.LecturerRepo;
+using someren_vilage.Repositorie.OrderRepo;
+using someren_vilage.Repositorie.ParticipantRepo;
+using someren_vilage.Repositorie.RoomRepo;
+using someren_vilage.Repositorie.StudentRepo;
+using someren_vilage.Repositorie.SupervisorRepo;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
-builder.Services.AddScoped<someren_vilage.Repositorie.IRoomRepository, someren_vilage.Repositorie.DbRoomRepository>();
-builder.Services.AddScoped<someren_vilage.Repositorie.IActivityRepository, someren_vilage.Repositorie.DbActivityRepository>();
-builder.Services.AddScoped<someren_vilage.Repositorie.IStudentRepository, someren_vilage.Repositorie.DbStudentRepository>();
+builder.Services.AddScoped<IRoomRepository, DbRoomRepository>();
+builder.Services.AddScoped<IActivityRepository, DbActivityRepository>();
+builder.Services.AddScoped<IStudentRepository, DbStudentRepository>();
+builder.Services.AddScoped<ILecturerRepository, DbLecturerRepository>();
+builder.Services.AddScoped<IParticipantRepository, DbParticipantRepository>();
+builder.Services.AddScoped<ISupervisorRepository, DbSupervisorRepository>();
+builder.Services.AddScoped<IDrinkRepository, DbDrinkRepository>();
+builder.Services.AddScoped<IOrderRepository, DbOrderRepository>();
+
 
 var app = builder.Build();
 

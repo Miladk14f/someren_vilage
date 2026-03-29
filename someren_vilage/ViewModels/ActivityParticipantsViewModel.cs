@@ -7,8 +7,13 @@ namespace someren_vilage.ViewModels
     {
         public Activity Activity { get; set; }
         public List<Student> Participants { get; set; }
-        public List<Lecturer> Lecturers { get; set; }
         public List<Student> AllStudents { get; set; }
-        public List<Lecturer> AllLecturers { get; set; }
+
+        public ActivityParticipantsViewModel()
+        {
+            Activity = new Activity();
+            Participants = new List<Student>();
+            AllStudents = new List<Student>();
+        }
     }
 }
