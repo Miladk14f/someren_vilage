@@ -8,12 +8,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.4" />
+    <Compile Remove="Repositorie\ParticipantRepo\**" />
+    <Compile Remove="Repositorie\SupervisorRepo\**" />
+    <Content Remove="Repositorie\ParticipantRepo\**" />
+    <Content Remove="Repositorie\SupervisorRepo\**" />
+    <EmbeddedResource Remove="Repositorie\ParticipantRepo\**" />
+    <EmbeddedResource Remove="Repositorie\SupervisorRepo\**" />
+    <None Remove="Repositorie\ParticipantRepo\**" />
+    <None Remove="Repositorie\SupervisorRepo\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Repositorie\ParticipantRepo\" />
-    <Folder Include="Repositorie\SupervisorRepo\" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.4" />
   </ItemGroup>
 
 </Project>
