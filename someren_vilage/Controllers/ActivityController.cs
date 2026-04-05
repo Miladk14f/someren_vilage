@@ -1,22 +1,23 @@
 using Microsoft.AspNetCore.Mvc;
 using someren_vilage.Models;
 using someren_vilage.Repositorie.ActivityRepo;
-using someren_vilage.Repositorie.ParticipantRepo;
 using someren_vilage.Repositorie.SupervisorRepo;
+using someren_vilage.Repositorie.LecturerRepo;
 
 namespace someren_vilage.Controllers
 {
     public class ActivityController : Controller
     {
         private readonly IActivityRepository _repo;
-        private readonly IParticipantRepository _participantRepo;
         private readonly ISupervisorRepository _supervisorRepo;
+        private readonly ILecturerRepository _lecturerRepo;
 
-        public ActivityController(IActivityRepository repo, IParticipantRepository participantRepo, ISupervisorRepository supervisorRepo)
+
+        public ActivityController(IActivityRepository repo, ISupervisorRepository supervisorRepo, ILecturerRepository lecturerRepo)
         {
             _repo = repo;
-            _participantRepo = participantRepo;
             _supervisorRepo = supervisorRepo;
+            _lecturerRepo = lecturerRepo;
         }
 
         [HttpGet]
@@ -137,29 +138,9 @@ namespace someren_vilage.Controllers
             }
         }
 
-        [HttpGet]
-        public IActionResult Participent(int id)
-        {
-            try
-            {
-                Activity? activity = _repo.GetById(id);
-                if (activity == null) return NotFound();
+        // Supervisor manage per activity
 
-                ViewModels.ActivityParticipantsViewModel model = new ViewModels.ActivityParticipantsViewModel
-                {
-                    Activity = activity,
-                    Participants = _participantRepo.GetParticipants(id),
-                    AllStudents = _participantRepo.GetAllStudents()
-                };
-
-                return View(model);
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = ex.Message;
-                return RedirectToAction(nameof(Index));
-            }
-        }
+        // GET to show page with activity info and supervisor info from DB
 
         [HttpGet]
         public IActionResult Supervisor(int id)
@@ -169,11 +150,11 @@ namespace someren_vilage.Controllers
                 Activity? activity = _repo.GetById(id);
                 if (activity == null) return NotFound();
 
-                ViewModels.ActivitySupervisorsViewModel model = new ViewModels.ActivitySupervisorsViewModel
+                ViewModels.ActivityLecturerViewModel model = new ViewModels.ActivityLecturerViewModel
                 {
                     Activity = activity,
                     Lecturers = _supervisorRepo.GetSupervisors(id),
-                    AllLecturers = _supervisorRepo.GetAllLecturers()
+                    AllLecturers = _lecturerRepo.GetAll()
                 };
 
                 return View(model);
@@ -185,45 +166,11 @@ namespace someren_vilage.Controllers
             }
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult AddParticipant(int activityId, int studentNumber)
+        public IActionResult AddSupervisor(int activityId, int lecturerId)
         {
             try
             {
-                _participantRepo.AddParticipant(activityId, studentNumber);
-                return RedirectToAction(nameof(Participent), new { id = activityId });
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = ex.Message;
-                return RedirectToAction(nameof(Participent), new { id = activityId });
-            }
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult RemoveParticipant(int activityId, int studentNumber)
-        {
-            try
-            {
-                _participantRepo.RemoveParticipant(activityId, studentNumber);
-                return RedirectToAction(nameof(Participent), new { id = activityId });
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = ex.Message;
-                return RedirectToAction(nameof(Participent), new { id = activityId });
-            }
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult AddLecturer(int activityId, int lecturerId)
-        {
-            try
-            {
-                _supervisorRepo.AddSupervisor(activityId, lecturerId);
+                _supervisorRepo.AddSupervisorToActivity(activityId, lecturerId);
                 return RedirectToAction(nameof(Supervisor), new { id = activityId });
             }
             catch (Exception ex)
@@ -233,13 +180,12 @@ namespace someren_vilage.Controllers
             }
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult RemoveLecturer(int activityId, int lecturerId)
+
+        public IActionResult RemoveSupervisor(int activityId, int lecturerId)
         {
             try
             {
-                _supervisorRepo.RemoveSupervisor(activityId, lecturerId);
+                _supervisorRepo.DeleteSupervisorFromActivity(activityId, lecturerId);
                 return RedirectToAction(nameof(Supervisor), new { id = activityId });
             }
             catch (Exception ex)
@@ -248,5 +194,8 @@ namespace someren_vilage.Controllers
                 return RedirectToAction(nameof(Supervisor), new { id = activityId });
             }
         }
+
+
+
     }
-}
+ }
