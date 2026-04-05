@@ -1,16 +1,23 @@
 using Microsoft.AspNetCore.Mvc;
 using someren_vilage.Models;
 using someren_vilage.Repositorie.ActivityRepo;
+using someren_vilage.Repositorie.SupervisorRepo;
+using someren_vilage.Repositorie.LecturerRepo;
 
 namespace someren_vilage.Controllers
 {
     public class ActivityController : Controller
     {
         private readonly IActivityRepository _repo;
+        private readonly ISupervisorRepository _supervisorRepo;
+        private readonly ILecturerRepository _lecturerRepo;
 
-        public ActivityController(IActivityRepository repo)
+
+        public ActivityController(IActivityRepository repo, ISupervisorRepository supervisorRepo, ILecturerRepository lecturerRepo)
         {
             _repo = repo;
+            _supervisorRepo = supervisorRepo;
+            _lecturerRepo = lecturerRepo;
         }
 
         [HttpGet]
@@ -131,5 +138,64 @@ namespace someren_vilage.Controllers
             }
         }
 
+        // Supervisor manage per activity
+
+        // GET to show page with activity info and supervisor info from DB
+
+        [HttpGet]
+        public IActionResult Supervisor(int id)
+        {
+            try
+            {
+                Activity? activity = _repo.GetById(id);
+                if (activity == null) return NotFound();
+
+                ViewModels.ActivityLecturerViewModel model = new ViewModels.ActivityLecturerViewModel
+                {
+                    Activity = activity,
+                    Lecturers = _supervisorRepo.GetSupervisors(id),
+                    AllLecturers = _lecturerRepo.GetAll()
+                };
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(Index));
             }
         }
+
+        public IActionResult AddSupervisor(int activityId, int lecturerId)
+        {
+            try
+            {
+                _supervisorRepo.AddSupervisorToActivity(activityId, lecturerId);
+                return RedirectToAction(nameof(Supervisor), new { id = activityId });
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(Supervisor), new { id = activityId });
+            }
+        }
+
+
+        public IActionResult RemoveSupervisor(int activityId, int lecturerId)
+        {
+            try
+            {
+                _supervisorRepo.DeleteSupervisorFromActivity(activityId, lecturerId);
+                return RedirectToAction(nameof(Supervisor), new { id = activityId });
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(Supervisor), new { id = activityId });
+            }
+        }
+
+
+
+    }
+ }
