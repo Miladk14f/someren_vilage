@@ -5,7 +5,6 @@ using someren_vilage.Repositorie.OrderRepo;
 using someren_vilage.Repositorie.ParticipantRepo;
 using someren_vilage.Repositorie.RoomRepo;
 using someren_vilage.Repositorie.StudentRepo;
-using someren_vilage.Repositorie.SupervisorRepo;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +14,6 @@ builder.Services.AddScoped<IActivityRepository, DbActivityRepository>();
 builder.Services.AddScoped<IStudentRepository, DbStudentRepository>();
 builder.Services.AddScoped<ILecturerRepository, DbLecturerRepository>();
 builder.Services.AddScoped<IParticipantRepository, DbParticipantRepository>();
-builder.Services.AddScoped<ISupervisorRepository, DbSupervisorRepository>();
 builder.Services.AddScoped<IDrinkRepository, DbDrinkRepository>();
 builder.Services.AddScoped<IOrderRepository, DbOrderRepository>();
 
