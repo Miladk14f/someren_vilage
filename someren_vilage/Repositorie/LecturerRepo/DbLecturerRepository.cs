@@ -7,7 +7,7 @@ namespace someren_vilage.Repositorie.LecturerRepo
     public class DbLecturerRepository : ILecturerRepository
     {
 
-        private string studentColumnNames = "lecturer_id, first_name, last_name, phone_number, age, room_id";
+        private string lecturerColumnNames = "lecturer_id, first_name, last_name, phone_number, age, room_id";
 
         private readonly String? _connectionString;
         public DbLecturerRepository(IConfiguration configuration)
@@ -44,7 +44,7 @@ namespace someren_vilage.Repositorie.LecturerRepo
 
                 using (SqlConnection connection = new SqlConnection(_connectionString))
                 {
-                    string query = $"SELECT {studentColumnNames} FROM dbo.Lecturer ORDER BY last_name ASC";
+                    string query = $"SELECT {lecturerColumnNames} FROM dbo.Lecturer ORDER BY last_name ASC";
                     SqlCommand command = new SqlCommand(query, connection);
 
                     command.Connection.Open();
@@ -131,7 +131,7 @@ namespace someren_vilage.Repositorie.LecturerRepo
             {
                 using (SqlConnection connection = new SqlConnection(_connectionString))
                 {
-                    string query = $"SELECT {studentColumnNames} FROM dbo.Lecturer WHERE lecturer_id = @lecturerId";
+                    string query = $"SELECT {lecturerColumnNames} FROM dbo.Lecturer WHERE lecturer_id = @lecturerId";
                     SqlCommand command = new SqlCommand(query, connection);
 
                     command.Parameters.AddWithValue("@lecturerId", lecturerId);

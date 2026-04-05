@@ -1,15 +1,15 @@
-using System.Collections.Generic;
-using someren_vilage.Models;
+﻿using someren_vilage.Models;
+
 
 namespace someren_vilage.ViewModels
 {
-    public class ActivitySupervisorsViewModel
+    public class ActivityLecturerViewModel
     {
         public Activity Activity { get; set; }
         public List<Lecturer> Lecturers { get; set; }
         public List<Lecturer> AllLecturers { get; set; }
 
-        public ActivitySupervisorsViewModel()
+        public ActivityLecturerViewModel()
         {
             Activity = new Activity();
             Lecturers = new List<Lecturer>();
@@ -17,3 +17,4 @@ namespace someren_vilage.ViewModels
         }
     }
 }
+
