@@ -16,54 +16,116 @@ namespace someren_vilage.Controllers
             _roomRepo = roomRepo;
         }
 
-        public IActionResult Index()
+        [HttpGet]
+        public IActionResult Index(string sort)
         {
-            List<Student> students = _repo.GetAll();
-            return View(students);
+            try
+            {
+                List<Student> students = _repo.GetAll();
+
+                students = sort switch
+                {
+                    "number_desc" => students.OrderByDescending(s => s.StudentNumber).ToList(),
+                    "firstname" => students.OrderBy(s => s.FirstName).ToList(),
+                    "firstname_desc" => students.OrderByDescending(s => s.FirstName).ToList(),
+                    "lastname" => students.OrderBy(s => s.LastName).ToList(),
+                    "lastname_desc" => students.OrderByDescending(s => s.LastName).ToList(),
+                    "phone" => students.OrderBy(s => s.PhoneNumber).ToList(),
+                    "phone_desc" => students.OrderByDescending(s => s.PhoneNumber).ToList(),
+                    "class" => students.OrderBy(s => s.Class).ToList(),
+                    "class_desc" => students.OrderByDescending(s => s.Class).ToList(),
+                    "room" => students.OrderBy(s => s.RoomId).ToList(),
+                    "room_desc" => students.OrderByDescending(s => s.RoomId).ToList(),
+                    _ => students.OrderBy(s => s.StudentNumber).ToList(),
+                };
+
+                ViewData["CurrentSort"] = sort;
+
+                return View(students);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return View(new List<Student>());
+            }
         }
 
+        [HttpGet]
         public IActionResult Create()
         {
-            ViewBag.Rooms = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_roomRepo.GetAll(), "RoomId", "RoomId");
-            return View(new Student());
+            try
+            {
+                ViewBag.Rooms = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_roomRepo.GetAll(), "RoomId", "RoomId");
+                return View(new Student());
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Student student)
         {
-            if (!ModelState.IsValid)
+            try
             {
+                if (!ModelState.IsValid)
+                {
+                    ViewBag.Rooms = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_roomRepo.GetAll(), "RoomId", "RoomId", student.RoomId);
+                    return View(student);
+                }
+
+                _repo.Add(student);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return View(student);
+            }
+        }
+
+        [HttpGet]
+        public IActionResult Edit(int id)
+        {
+            try
+            {
+                Student? student = _repo.GetById(id);
+                if (student == null)
+                    return NotFound();
+
                 ViewBag.Rooms = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_roomRepo.GetAll(), "RoomId", "RoomId", student.RoomId);
                 return View(student);
             }
-
-            _repo.Add(student);
-            return RedirectToAction(nameof(Index));
-        }
-
-        public IActionResult Edit(int id)
-        {
-            Student? student = _repo.GetById(id);
-            if (student == null)
-                return NotFound();
-
-            ViewBag.Rooms = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_roomRepo.GetAll(), "RoomId", "RoomId", student.RoomId);
-            return View(student);
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Student student)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                ViewBag.Rooms = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_roomRepo.GetAll(), "RoomId", "RoomId", student.RoomId);
+                if (!ModelState.IsValid)
+                {
+                    ViewBag.Rooms = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(_roomRepo.GetAll(), "RoomId", "RoomId", student.RoomId);
+                    return View(student);
+                }
+
+                _repo.Update(student);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
                 return View(student);
             }
-
-            _repo.Update(student);
-            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -71,8 +133,16 @@ namespace someren_vilage.Controllers
         [ActionName("Delete")]
         public IActionResult DeleteConfirmed(int id)
         {
-            _repo.Delete(id);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                _repo.Delete(id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(Index));
+            }
         }
     }
 }

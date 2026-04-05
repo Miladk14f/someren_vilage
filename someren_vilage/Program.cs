@@ -14,10 +14,11 @@ builder.Services.AddScoped<IRoomRepository, DbRoomRepository>();
 builder.Services.AddScoped<IActivityRepository, DbActivityRepository>();
 builder.Services.AddScoped<IStudentRepository, DbStudentRepository>();
 builder.Services.AddScoped<ILecturerRepository, DbLecturerRepository>();
-builder.Services.AddScoped<IParticipantRepository, DbParticipantRepository>();
-builder.Services.AddScoped<ISupervisorRepository, DbSupervisorRepository>();
 builder.Services.AddScoped<IDrinkRepository, DbDrinkRepository>();
 builder.Services.AddScoped<IOrderRepository, DbOrderRepository>();
+builder.Services.AddScoped<ISupervisorRepository, DBSupervisorRepository>();
+builder.Services.AddScoped<IParticipantRepository, DbParticipantRepository>();
+
 
 
 var app = builder.Build();

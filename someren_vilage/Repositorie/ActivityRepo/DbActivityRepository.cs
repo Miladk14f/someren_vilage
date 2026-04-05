@@ -15,20 +15,27 @@ namespace someren_vilage.Repositorie.ActivityRepo
 
         public List<Activity> GetAll()
         {
-            List<Activity> activities = new List<Activity>();
-
-            using SqlConnection connection = new SqlConnection(connectionString);
-            using SqlCommand command = new SqlCommand("SELECT activity_id, name, day, time_of_day FROM dbo.Activity", connection);
-
-            connection.Open();
-            using SqlDataReader reader = command.ExecuteReader();
-            while (reader.Read())
+            try
             {
-                Activity activity = ReadActivity(reader);
-                activities.Add(activity);
-            }
+                List<Activity> activities = new List<Activity>();
 
-            return activities;
+                using SqlConnection connection = new SqlConnection(connectionString);
+                using SqlCommand command = new SqlCommand("SELECT activity_id, name, day, time_of_day FROM dbo.Activity", connection);
+
+                connection.Open();
+                using SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    Activity activity = ReadActivity(reader);
+                    activities.Add(activity);
+                }
+
+                return activities;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error retrieving all activities.", ex);
+            }
         }
 
         private Activity ReadActivity(SqlDataReader reader)
@@ -45,57 +52,85 @@ namespace someren_vilage.Repositorie.ActivityRepo
 
         public Activity? GetById(int activityId)
         {
-            using SqlConnection connection = new SqlConnection(connectionString);
-            using SqlCommand command = new SqlCommand("SELECT activity_id, name, day, time_of_day FROM dbo.Activity WHERE activity_id = @id", connection);
-            command.Parameters.AddWithValue("@id", activityId);
-
-            connection.Open();
-            using SqlDataReader reader = command.ExecuteReader();
-            if (reader.Read())
+            try
             {
-                return ReadActivity(reader);
-            }
+                using SqlConnection connection = new SqlConnection(connectionString);
+                using SqlCommand command = new SqlCommand("SELECT activity_id, name, day, time_of_day FROM dbo.Activity WHERE activity_id = @id", connection);
+                command.Parameters.AddWithValue("@id", activityId);
 
-            return null;
+                connection.Open();
+                using SqlDataReader reader = command.ExecuteReader();
+                if (reader.Read())
+                {
+                    return ReadActivity(reader);
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error retrieving activity with ID {activityId}.", ex);
+            }
         }
 
         public void Add(Activity activity)
         {
-            using SqlConnection connection = new SqlConnection(connectionString);
-            using SqlCommand command = new SqlCommand(
-                "INSERT INTO dbo.Activity (name, day, time_of_day) VALUES (@name, @day, @time); SELECT CAST(SCOPE_IDENTITY() AS int);", connection);
+            try
+            {
+                using SqlConnection connection = new SqlConnection(connectionString);
+                using SqlCommand command = new SqlCommand(
+                    "INSERT INTO dbo.Activity (name, day, time_of_day) VALUES (@name, @day, @time); SELECT CAST(SCOPE_IDENTITY() AS int);", connection);
 
-            command.Parameters.AddWithValue("@name", activity.Name);
-            command.Parameters.AddWithValue("@day", activity.Day);
-            command.Parameters.AddWithValue("@time", activity.TimeOfDay);
+                command.Parameters.AddWithValue("@name", activity.Name);
+                command.Parameters.AddWithValue("@day", activity.Day);
+                command.Parameters.AddWithValue("@time", activity.TimeOfDay);
 
-            connection.Open();
-            activity.ActivityId = (int)command.ExecuteScalar();
+                connection.Open();
+                activity.ActivityId = (int)command.ExecuteScalar();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error adding activity.", ex);
+            }
         }
 
         public void Update(Activity activity)
         {
-            using SqlConnection connection = new SqlConnection(connectionString);
-            using SqlCommand command = new SqlCommand(
-                "UPDATE dbo.Activity SET name = @name, day = @day, time_of_day = @time WHERE activity_id = @id", connection);
+            try
+            {
+                using SqlConnection connection = new SqlConnection(connectionString);
+                using SqlCommand command = new SqlCommand(
+                    "UPDATE dbo.Activity SET name = @name, day = @day, time_of_day = @time WHERE activity_id = @id", connection);
 
-            command.Parameters.AddWithValue("@name", activity.Name);
-            command.Parameters.AddWithValue("@day", activity.Day);
-            command.Parameters.AddWithValue("@time", activity.TimeOfDay);
-            command.Parameters.AddWithValue("@id", activity.ActivityId);
+                command.Parameters.AddWithValue("@name", activity.Name);
+                command.Parameters.AddWithValue("@day", activity.Day);
+                command.Parameters.AddWithValue("@time", activity.TimeOfDay);
+                command.Parameters.AddWithValue("@id", activity.ActivityId);
 
-            connection.Open();
-            command.ExecuteNonQuery();
+                connection.Open();
+                command.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error updating activity.", ex);
+            }
         }
 
         public void Delete(int activityId)
         {
-            using SqlConnection connection = new SqlConnection(connectionString);
-            using SqlCommand command = new SqlCommand("DELETE FROM dbo.Activity WHERE activity_id = @id", connection);
-            command.Parameters.AddWithValue("@id", activityId);
+            try
+            {
+                using SqlConnection connection = new SqlConnection(connectionString);
+                using SqlCommand command = new SqlCommand("DELETE FROM dbo.Activity WHERE activity_id = @id", connection);
+                command.Parameters.AddWithValue("@id", activityId);
 
-            connection.Open();
-            command.ExecuteNonQuery();
+                connection.Open();
+                command.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error deleting activity with ID {activityId}.", ex);
+            }
         }
     }
 }

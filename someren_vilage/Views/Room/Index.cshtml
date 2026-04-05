@@ -64,7 +64,8 @@
                     <td>@item.RoomType</td>
                     <td>@item.Capacity</td>
                     <td>@item.BuildingName</td>
-                    <td>
+                    <td class="text-nowrap">
+                        <a asp-controller="Room" asp-action="ManageStudents" asp-route-id="@item.RoomId" class="btn btn-sm btn-info me-1">Manage Students</a>
                         <a asp-controller="Room" asp-action="Edit" asp-route-id="@item.RoomId" class="btn btn-sm btn-primary me-1">Edit</a>
 
                         <form asp-controller="Room" asp-action="Delete" asp-route-id="@item.RoomId" method="post" style="display:inline" onsubmit="return confirm('Delete this room?');">

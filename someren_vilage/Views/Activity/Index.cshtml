@@ -15,6 +15,13 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Error:</strong> @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 
 <div class="d-flex align-items-center mb-3">
     <a asp-controller="Activity" asp-action="Create" class="btn btn-success me-2">Create Activity</a>
@@ -55,16 +62,17 @@
                     <td>@item.Name</td>
                     <td>@item.Day</td>
                     <td>@item.TimeOfDay</td>
-                    <td>
+                    <td class="text-nowrap">
+                        <a asp-controller="Activity" asp-action="Participent" asp-route-id="@item.ActivityId" class="btn btn-sm btn-purple me-1">Participants</a>
+                        <a asp-controller="Activity" asp-action="Supervisor" asp-route-id="@item.ActivityId" class="btn btn-sm btn-outline-info me-1">Supervisors</a>
+
                         <a asp-controller="Activity" asp-action="Edit" asp-route-id="@item.ActivityId" class="btn btn-sm btn-primary me-1">Edit</a>
 
                         <form asp-controller="Activity" asp-action="Delete" asp-route-id="@item.ActivityId" method="post" style="display:inline" onsubmit="return confirm('Delete this activity?');">
                             <button type="submit" class="btn btn-sm btn-danger">Delete</button>
                         </form>
                     </td>
-                    <td>
-                        <a asp-controller="Activity" asp-action="Participent" asp-route-id="@item.ActivityId" class="btn btn-sm btn-purple me-1">Participents</a>
-                    </td>
+
                 </tr>
             }
         }

@@ -30,8 +30,10 @@
     </div>
 
     <div class="form-group py-2">
-        <label for="RoomId">Room number(1-10)</label>
-        <input type="number" name="RoomId" id="RoomId" class="form-control" required value="@Model?.RoomId" />
+        <label asp-for="RoomId" class="form-label">Room</label>
+        <select asp-for="RoomId" class="form-control" asp-items="ViewBag.Rooms">
+            <option value="">-- Select a Room --</option>
+        </select>
     </div>
 
     <button type="submit" class="btn btn-primary">Create</button>

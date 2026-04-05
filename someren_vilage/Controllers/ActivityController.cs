@@ -1,80 +1,130 @@
 using Microsoft.AspNetCore.Mvc;
 using someren_vilage.Models;
 using someren_vilage.Repositorie.ActivityRepo;
-using someren_vilage.Repositorie.ParticipantRepo;
 using someren_vilage.Repositorie.SupervisorRepo;
+using someren_vilage.Repositorie.LecturerRepo;
+using someren_vilage.Repositorie.ParticipantRepo;
+using someren_vilage.Repositorie.StudentRepo;
 
 namespace someren_vilage.Controllers
 {
     public class ActivityController : Controller
     {
         private readonly IActivityRepository _repo;
-        private readonly IParticipantRepository _participantRepo;
         private readonly ISupervisorRepository _supervisorRepo;
+        private readonly IParticipantRepository _participantRepo;
+        private readonly ILecturerRepository _lecturerRepo;
+        private readonly IStudentRepository _studentRepo;
 
-        public ActivityController(IActivityRepository repo, IParticipantRepository participantRepo, ISupervisorRepository supervisorRepo)
+
+        public ActivityController(IActivityRepository repo, ISupervisorRepository supervisorRepo, ILecturerRepository lecturerRepo, IParticipantRepository participantRepo, IStudentRepository studentRepo)
         {
             _repo = repo;
-            _participantRepo = participantRepo;
             _supervisorRepo = supervisorRepo;
+            _participantRepo = participantRepo;
+            _lecturerRepo = lecturerRepo;
+            _studentRepo = studentRepo;
         }
 
+        [HttpGet]
         public IActionResult Index(string sort)
         {
-            List<Activity> activities = _repo.GetAll();
-
-            activities = sort switch
+            try
             {
-                "name" => activities.OrderBy(a => a.Name).ToList(),
-                "name_desc" => activities.OrderByDescending(a => a.Name).ToList(),
-                "day" => activities.OrderBy(a => a.Day).ToList(),
-                "day_desc" => activities.OrderByDescending(a => a.Day).ToList(),
-                "time" => activities.OrderBy(a => a.TimeOfDay).ToList(),
-                "time_desc" => activities.OrderByDescending(a => a.TimeOfDay).ToList(),
-                _ => activities.OrderBy(a => a.Name).ToList(),
-            };
+                List<Activity> activities = _repo.GetAll();
 
-            ViewData["CurrentSort"] = sort;
+                activities = sort switch
+                {
+                    "name" => activities.OrderBy(a => a.Name).ToList(),
+                    "name_desc" => activities.OrderByDescending(a => a.Name).ToList(),
+                    "day" => activities.OrderBy(a => a.Day).ToList(),
+                    "day_desc" => activities.OrderByDescending(a => a.Day).ToList(),
+                    "time" => activities.OrderBy(a => a.TimeOfDay).ToList(),
+                    "time_desc" => activities.OrderByDescending(a => a.TimeOfDay).ToList(),
+                    _ => activities.OrderBy(a => a.Name).ToList(),
+                };
 
-            return View(activities);
+                ViewData["CurrentSort"] = sort;
+
+                return View(activities);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return View(new List<Activity>());
+            }
         }
 
+        [HttpGet]
         public IActionResult Create()
         {
-            return View(new Activity());
+            try
+            {
+                return View(new Activity());
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(Activity activity)
         {
-            if (!ModelState.IsValid)
+            try
             {
+                if (!ModelState.IsValid)
+                {
+                    return View(activity);
+                }
+
+                _repo.Add(activity);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
                 return View(activity);
             }
-
-            _repo.Add(activity);
-            return RedirectToAction(nameof(Index));
         }
 
+        [HttpGet]
         public IActionResult Edit(int id)
         {
-            Activity? activity = _repo.GetById(id);
-            if (activity == null)
-                return NotFound();
+            try
+            {
+                Activity? activity = _repo.GetById(id);
+                if (activity == null)
+                    return NotFound();
 
-            return View(activity);
+                return View(activity);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Activity activity)
         {
-            if (!ModelState.IsValid)
-                return View(activity);
+            try
+            {
+                if (!ModelState.IsValid)
+                    return View(activity);
 
-            _repo.Update(activity);
-            return RedirectToAction(nameof(Index));
+                _repo.Update(activity);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return View(activity);
+            }
         }
 
         [HttpPost]
@@ -82,57 +132,137 @@ namespace someren_vilage.Controllers
         [ActionName("Delete")]
         public IActionResult DeleteConfirmed(int id)
         {
-            _repo.Delete(id);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                _repo.Delete(id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(Index));
+            }
         }
 
+        // participant
+
+        [HttpGet]
         public IActionResult Participent(int id)
         {
-            Activity? activity = _repo.GetById(id);
-            if (activity == null) return NotFound();
-
-            ViewModels.ActivityParticipantsViewModel model = new ViewModels.ActivityParticipantsViewModel
+            try
             {
-                Activity = activity,
-                Participants = _participantRepo.GetParticipants(id),
-                Lecturers = _supervisorRepo.GetSupervisors(id),
-                AllStudents = _participantRepo.GetAllStudents(),
-                AllLecturers = _supervisorRepo.GetAllLecturers()
-            };
+                Activity? activity = _repo.GetById(id);
+                if (activity == null) return NotFound();
 
-            return View(model);
+                ViewModels.ActivityParticipantsViewModel model = new ViewModels.ActivityParticipantsViewModel
+                {
+                    Activity = activity,
+                    Participants = _participantRepo.GetParticipants(id),
+                    AllStudents = _studentRepo.GetAll()
+                };
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult AddParticipant(int activityId, int studentNumber)
         {
-            _participantRepo.AddParticipant(activityId, studentNumber);
-            return RedirectToAction(nameof(Participent), new { id = activityId });
+            try
+            {
+                _participantRepo.AddParticipant(activityId, studentNumber);
+                return RedirectToAction(nameof(Participent), new { id = activityId });
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(Participent), new { id = activityId });
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult RemoveParticipant(int activityId, int studentNumber)
         {
-            _participantRepo.RemoveParticipant(activityId, studentNumber);
-            return RedirectToAction(nameof(Participent), new { id = activityId });
+            try
+            {
+                _participantRepo.RemoveParticipant(activityId, studentNumber);
+                return RedirectToAction(nameof(Participent), new { id = activityId });
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(Participent), new { id = activityId });
+            }
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult AddLecturer(int activityId, int lecturerId)
+
+
+
+        // Supervisor manage per activity
+
+        // GET to show page with activity info and supervisor info from DB
+
+        [HttpGet]
+        public IActionResult Supervisor(int id)
         {
-            _supervisorRepo.AddSupervisor(activityId, lecturerId);
-            return RedirectToAction(nameof(Participent), new { id = activityId });
+            try
+            {
+                Activity? activity = _repo.GetById(id);
+                if (activity == null) return NotFound();
+
+                ViewModels.ActivityLecturerViewModel model = new ViewModels.ActivityLecturerViewModel
+                {
+                    Activity = activity,
+                    Lecturers = _supervisorRepo.GetSupervisors(id),
+                    AllLecturers = _lecturerRepo.GetAll()
+                };
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(Index));
+            }
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult RemoveLecturer(int activityId, int lecturerId)
+        public IActionResult AddSupervisor(int activityId, int lecturerId)
         {
-            _supervisorRepo.RemoveSupervisor(activityId, lecturerId);
-            return RedirectToAction(nameof(Participent), new { id = activityId });
+            try
+            {
+                _supervisorRepo.AddSupervisorToActivity(activityId, lecturerId);
+                return RedirectToAction(nameof(Supervisor), new { id = activityId });
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(Supervisor), new { id = activityId });
+            }
         }
+
+
+        public IActionResult RemoveSupervisor(int activityId, int lecturerId)
+        {
+            try
+            {
+                _supervisorRepo.DeleteSupervisorFromActivity(activityId, lecturerId);
+                return RedirectToAction(nameof(Supervisor), new { id = activityId });
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction(nameof(Supervisor), new { id = activityId });
+            }
+        }
+
+
+
     }
-}
+ }

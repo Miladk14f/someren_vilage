@@ -32,7 +32,7 @@
                 <td>@o.Drink.Price.ToString("C")</td>
                 <td>@o.Quantity</td>
                 <td>@((o.Drink.Price * o.Quantity).ToString("C"))</td>
-                <td>
+                <td class="text-nowrap">
                     <form asp-controller="Order" asp-action="RemoveOrder" method="post" style="display:inline" onsubmit="return confirm('Remove this order?');">
                         <input type="hidden" name="studentNumber" value="@o.StudentNumber" />
                         <input type="hidden" name="drinkId" value="@o.DrinkId" />
