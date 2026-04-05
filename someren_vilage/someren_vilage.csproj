@@ -8,13 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Repositorie\ParticipantRepo\**" />
-    <Content Remove="Repositorie\ParticipantRepo\**" />
-    <EmbeddedResource Remove="Repositorie\ParticipantRepo\**" />
-    <None Remove="Repositorie\ParticipantRepo\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.4" />
   </ItemGroup>
 
