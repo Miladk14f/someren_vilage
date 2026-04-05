@@ -4,6 +4,7 @@ using someren_vilage.Repositorie.ActivityRepo;
 using someren_vilage.Repositorie.SupervisorRepo;
 using someren_vilage.Repositorie.LecturerRepo;
 using someren_vilage.Repositorie.ParticipantRepo;
+using someren_vilage.Repositorie.StudentRepo;
 
 namespace someren_vilage.Controllers
 {
@@ -13,14 +14,16 @@ namespace someren_vilage.Controllers
         private readonly ISupervisorRepository _supervisorRepo;
         private readonly IParticipantRepository _participantRepo;
         private readonly ILecturerRepository _lecturerRepo;
+        private readonly IStudentRepository _studentRepo;
 
 
-        public ActivityController(IActivityRepository repo, ISupervisorRepository supervisorRepo, ILecturerRepository lecturerRepo, IParticipantRepository participantRepo)
+        public ActivityController(IActivityRepository repo, ISupervisorRepository supervisorRepo, ILecturerRepository lecturerRepo, IParticipantRepository participantRepo, IStudentRepository studentRepo)
         {
             _repo = repo;
             _supervisorRepo = supervisorRepo;
             _participantRepo = participantRepo;
             _lecturerRepo = lecturerRepo;
+            _studentRepo = studentRepo;
         }
 
         [HttpGet]
@@ -155,7 +158,7 @@ namespace someren_vilage.Controllers
                 {
                     Activity = activity,
                     Participants = _participantRepo.GetParticipants(id),
-                    AllStudents = _participantRepo.GetAllStudents()
+                    AllStudents = _studentRepo.GetAll()
                 };
 
                 return View(model);

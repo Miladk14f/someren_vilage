@@ -55,23 +55,6 @@ namespace someren_vilage.Repositorie.ParticipantRepo
             command.ExecuteNonQuery();
         }
 
-        public List<Student> GetAllStudents()
-        {
-            List<Student> list = new List<Student>();
-
-            using SqlConnection connection = new SqlConnection(connectionString);
-            using SqlCommand command = new SqlCommand(
-                "SELECT student_number, first_name, last_name, phone_number, class, room_id FROM dbo.Student", connection);
-
-            connection.Open();
-            using SqlDataReader reader = command.ExecuteReader();
-            while (reader.Read())
-            {
-                list.Add(ReadStudent(reader));
-            }
-            return list;
-        }
-
         private Student ReadStudent(SqlDataReader reader)
         {
             Student student = new Student()
