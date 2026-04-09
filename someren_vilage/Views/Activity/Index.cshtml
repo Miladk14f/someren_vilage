@@ -42,7 +42,9 @@
     </div>
 </div>
 
-@{ var hasAny = false; }
+@{
+    var hasAny = false;
+}
 
 <div class="content-card">
     <table class="table table-styled table-hover mb-0">
@@ -57,6 +59,25 @@
         <tbody>
             @if (Model != null)
             {
+<<<<<<< master
+                hasAny = true;
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Day</td>
+                    <td>@item.TimeOfDay</td>
+                    <td class="text-nowrap">
+                        <a asp-controller="Activity" asp-action="Participent" asp-route-id="@item.ActivityId" class="btn btn-sm btn-purple me-1">Participants</a>
+                        <a asp-controller="Activity" asp-action="Supervisor" asp-route-id="@item.ActivityId" class="btn btn-sm btn-outline-info me-1">Supervisors</a>
+
+                        <a asp-controller="Activity" asp-action="Edit" asp-route-id="@item.ActivityId" class="btn btn-sm btn-primary me-1">Edit</a>
+
+                        <form asp-controller="Activity" asp-action="Delete" asp-route-id="@item.ActivityId" method="post" style="display:inline" onsubmit="return confirm('Delete this activity?');">
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                    </td>
+
+                </tr>
+=======
                 foreach (var item in Model)
                 {
                     hasAny = true;
@@ -74,6 +95,7 @@
                         </td>
                     </tr>
                 }
+>>>>>>> Home_Design
             }
         </tbody>
     </table>
