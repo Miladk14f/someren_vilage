@@ -1,4 +1,6 @@
-@model someren_vilage.ViewModels.ActivitySupervisorsViewModel
+﻿@model someren_vilage.ViewModels.ActivityLecturerViewModel; 
+@* @model someren_vilage.Models.Activity; *@
+
 
 @{
     ViewData["Title"] = "Supervisors";
@@ -25,7 +27,7 @@
                 <td>@l.LecturerId</td>
                 <td>@l.FirstName @l.LastName</td>
                 <td class="text-nowrap">
-                    <form asp-controller="Activity" asp-action="RemoveLecturer" method="post" style="display:inline">
+                    <form asp-controller="Activity" asp-action="RemoveSupervisor" method="post" style="display:inline">
                         <input type="hidden" name="activityId" value="@Model.Activity.ActivityId" />
                         <input type="hidden" name="lecturerId" value="@l.LecturerId" />
                         @Html.AntiForgeryToken()
@@ -40,7 +42,7 @@
 <h5>Add lecturer</h5>
 <div class="row">
     <div class="col-md-6">
-        <form asp-controller="Activity" asp-action="AddLecturer" method="post">
+        <form asp-controller="Activity" asp-action="AddSupervisor" method="post">
             <input type="hidden" name="activityId" value="@Model.Activity.ActivityId" />
             <div class="mb-3">
                 <label class="form-label">Select Lecturer</label>
@@ -56,6 +58,7 @@
                 </select>
             </div>
             <button type="submit" class="btn btn-primary">Add</button>
+            <a asp-action="Index" class="btn btn-secondary ms-2">Back</a>
             @Html.AntiForgeryToken()
         </form>
     </div>

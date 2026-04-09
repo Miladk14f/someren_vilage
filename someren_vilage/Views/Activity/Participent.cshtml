@@ -1,4 +1,4 @@
-@model someren_vilage.ViewModels.ActivityParticipantsViewModel
+﻿@model someren_vilage.ViewModels.ActivityParticipantsViewModel
 
 @{
     ViewData["Title"] = "Participants";
@@ -56,6 +56,7 @@
                 </select>
             </div>
             <button type="submit" class="btn btn-primary">Add</button>
+            <a asp-action="Index" class="btn btn-secondary ms-2">Back</a>
             @Html.AntiForgeryToken()
         </form>
     </div>

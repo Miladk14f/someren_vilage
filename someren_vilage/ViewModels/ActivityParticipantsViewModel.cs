@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using someren_vilage.Models;
 
 namespace someren_vilage.ViewModels

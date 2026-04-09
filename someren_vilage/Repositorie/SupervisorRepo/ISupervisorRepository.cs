@@ -1,12 +1,12 @@
-using someren_vilage.Models;
+﻿using someren_vilage.Models;
 
 namespace someren_vilage.Repositorie.SupervisorRepo
 {
     public interface ISupervisorRepository
     {
+        void AddSupervisorToActivity(int activityId, int lecturerId);
+        void DeleteSupervisorFromActivity(int activityId, int lecturerId);
         List<Lecturer> GetSupervisors(int activityId);
-        void AddSupervisor(int activityId, int lecturerId);
-        void RemoveSupervisor(int activityId, int lecturerId);
-        List<Lecturer> GetAllLecturers();
+        //List<Lecturer> GetAllSupervisors(); // same as GetAllLecturer! redundent.
     }
 }
