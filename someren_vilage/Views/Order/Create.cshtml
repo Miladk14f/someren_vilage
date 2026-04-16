@@ -4,32 +4,40 @@
     ViewData["Title"] = "Create Order";
 }
 
-<h2>Create Order</h2>
+<div class="page-header">
+    <div class="page-header-overlay"></div>
+    <h1 class="display-6">Create Order</h1>
+    <p>Select a student, drink and quantity below.</p>
+</div>
 
-<form asp-controller="Order" asp-action="AddOrder" method="post">
-    <div class="mb-3">
-        <label class="form-label">Student</label>
-        <select name="studentNumber" class="form-select">
-            @foreach (var s in Model.AllStudents)
-            {
-                <option value="@s.StudentNumber">@s.StudentNumber - @s.FirstName @s.LastName</option>
-            }
-        </select>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Drink</label>
-        <select name="drinkId" class="form-select">
-            @foreach (var d in Model.AllDrinks)
-            {
-                <option value="@d.DrinkId">@d.Name - @d.Price.ToString("C")</option>
-            }
-        </select>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Quantity</label>
-        <input type="number" name="quantity" value="1" min="1" class="form-control" style="width:120px" />
-    </div>
-    @Html.AntiForgeryToken()
-    <button type="submit" class="btn btn-success">Create</button>
-    <a asp-controller="Order" asp-action="Index" class="btn btn-secondary">Cancel</a>
-</form>
+<div class="content-card form-card">
+    <form asp-controller="Order" asp-action="AddOrder" method="post">
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Student</label>
+            <select name="studentNumber" class="form-select">
+                @foreach (var s in Model.AllStudents)
+                {
+                    <option value="@s.StudentNumber">@s.StudentNumber - @s.FirstName @s.LastName</option>
+                }
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Drink</label>
+            <select name="drinkId" class="form-select">
+                @foreach (var d in Model.AllDrinks)
+                {
+                    <option value="@d.DrinkId">@d.Name - @d.Price.ToString("C")</option>
+                }
+            </select>
+        </div>
+        <div class="mb-4">
+            <label class="form-label fw-semibold">Quantity</label>
+            <input type="number" name="quantity" value="1" min="1" class="form-control" style="width:120px" />
+        </div>
+        @Html.AntiForgeryToken()
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary shadow-sm">Create</button>
+            <a asp-controller="Order" asp-action="Index" class="btn btn-outline-secondary">&larr; Back to List</a>
+        </div>
+    </form>
+</div>

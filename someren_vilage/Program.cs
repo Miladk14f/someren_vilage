@@ -36,6 +36,26 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 
+// Redirect to Setup page if connection string is not configured
+app.Use(async (context, next) =>
+{
+    string? connectionString = context.RequestServices.GetRequiredService<IConfiguration>()
+        .GetConnectionString("SomerenDb");
+
+    bool isSetupPath = context.Request.Path.StartsWithSegments("/Setup");
+    bool isStaticFile = context.Request.Path.StartsWithSegments("/lib")
+                     || context.Request.Path.StartsWithSegments("/css")
+                     || context.Request.Path.StartsWithSegments("/js");
+
+    if (string.IsNullOrWhiteSpace(connectionString) && !isSetupPath && !isStaticFile)
+    {
+        context.Response.Redirect("/Setup");
+        return;
+    }
+
+    await next();
+});
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
